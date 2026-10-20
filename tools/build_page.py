@@ -34,10 +34,13 @@ def build_fragment():
 
 def main():
     fragment = build_fragment()
+    # Az önálló oldalon a sablon eleje (title, meta, style) a fejlécbe kerül
+    head_end = fragment.index("</style>") + len("</style>")
+    head, body = fragment[:head_end], fragment[head_end:].lstrip("\n")
     page = (
         "<!doctype html>\n<html lang=\"hu\">\n<head>\n<meta charset=\"utf-8\">\n"
         "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\">\n"
-        "</head>\n<body>\n" + fragment + "\n</body>\n</html>\n"
+        + head + "\n</head>\n<body>\n" + body + "\n</body>\n</html>\n"
     )
     (ROOT / "index.html").write_text(page, encoding="utf-8")
     print("index.html", len(page.encode("utf-8")), "bájt")

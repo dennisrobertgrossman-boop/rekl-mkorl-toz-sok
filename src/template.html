@@ -357,10 +357,10 @@ footer { font-size: 12px; color: var(--muted); }
 
     <div class="side">
       <figure class="card inset-card">
-        <div class="card-head">
-          <figcaption class="card-title">Budapest · nagyítás</figcaption>
+        <figcaption class="card-head">
+          <span class="card-title">Budapest · nagyítás</span>
           <span class="mchips" aria-hidden="true"><span class="mchip mchip--1">M1</span><span class="mchip mchip--2">M2</span><span class="mchip mchip--3">M3</span><span class="mchip mchip--4">M4</span></span>
-        </div>
+        </figcaption>
         <svg id="inset" role="img" aria-label="Budapest nagyítva, a metróvonalakkal."></svg>
         <p class="inset-note">A metróvonalak nyomvonala sematikus. A főváros körüli foltok az agglomeráció beépített területei (vidék).</p>
       </figure>
@@ -395,7 +395,7 @@ footer { font-size: 12px; color: var(--muted); }
     <p class="legend-note">* A belterület általában és a külterületi útmenti sáv a reklámkataszter nyilvános összesítéseiben nem válik el, ezért együtt becsültük őket.</p>
   </section>
 
-  <section class="notes">
+  <div class="notes">
     <article class="card note-card">
       <h2>Hogyan számoltunk?</h2>
       <ol>
@@ -421,7 +421,7 @@ footer { font-size: 12px; color: var(--muted); }
       </ul>
       <p class="muted">Jelképes ábrázolás: a foltok a nagyobb beépített területeket, a szaggatott gyűrűk a nagyobb városok gazdasági és nagy kereskedelmi övezeteit, a vonalak a fő közúthálózatot mutatják. Az övezetek és a lakott terület tényleges határát a térkép nem jelöli.</p>
     </article>
-  </section>
+  </div>
 
   <footer>Készült 2026. október 20-án. A becslések tájékoztató jellegűek; a kataszter Excel-állományából kategóriánként pontosíthatók.</footer>
 </main>
@@ -437,6 +437,7 @@ footer { font-size: 12px; color: var(--muted); }
   const $ = (s, r = document) => r.querySelector(s);
   const app = $('#app');
   const tip = $('#tip');
+  document.documentElement.lang = 'hu';
 
   /* ---------- Számok ---------- */
   // Állomány: a reklámkataszterre hivatkozó sajtóközlések; megszűnés: becslés (lásd „Hogyan számoltunk?”)
@@ -455,11 +456,11 @@ footer { font-size: 12px; color: var(--muted); }
   const vidLossPct = [VID_LOSS[0] / VID_R * 100, VID_LOSS[1] / VID_R * 100];
 
   const SC = {
-    regen: { short: 'Régen', date: '2026. szept. 30-ig',
+    regen: { short: 'Régen',
       desc: 'Kiinduló állapot: a meglévő óriásplakátok a legtöbb területen fennmaradhattak, újat nem lehetett telepíteni.' },
-    most: { short: 'Most', date: '2026. okt. 1-jétől',
+    most: { short: 'Most',
       desc: 'Óriásplakát csak kormányrendeleti kijelöléssel helyezhető el, ilyen kijelölés még nincs. A nem megfelelő eszközöket 2026. december 31-ig el kell távolítani.' },
-    terv: { short: 'Tervezet', date: 'kihirdetés esetén',
+    terv: { short: 'Tervezet',
       desc: 'A kormányrendelet-tervezet az óriásplakátot csak gazdasági és nagy kereskedelmi övezetben, az ezekkel határos lakott területi útszakaszon, gyalogos aluljáróban és a metró üzemi területén engedné. Budapesten a fővárosi tilalom ettől függetlenül érvényes.' }
   };
   const ST_NAME = { lehet: 'Lehet', meglevo: 'Csak meglévő', nincs: 'Nincs jogalap', tilos: 'Tilos' };
@@ -714,7 +715,8 @@ footer { font-size: 12px; color: var(--muted); }
   }
 
   /* ---------- Állapot ---------- */
-  const state = { sc: 'terv', cat: null, pinned: false, anchor: null };
+  // anchorEl: a kategórialista gombja, amelyhez az ablak igazodik (görgetéskor is)
+  const state = { sc: 'terv', cat: null, pinned: false, anchorEl: null };
 
   function applyScenario(sc) {
     state.sc = sc;
@@ -776,10 +778,11 @@ footer { font-size: 12px; color: var(--muted); }
     if (cat) $(`#cat-${cat}`).classList.add('is-on');
   }
 
-  function show(cat, pos, pinned) {
+  function show(cat, pos, pinned, anchorEl) {
     const changed = state.cat !== cat;
     state.cat = cat;
     state.pinned = !!pinned;
+    state.anchorEl = anchorEl || null;
     tip.classList.toggle('is-pinned', state.pinned);
     if (changed || tip.hidden) renderTip(cat);
     tip.hidden = false;
@@ -790,6 +793,7 @@ footer { font-size: 12px; color: var(--muted); }
   function hide() {
     state.cat = null;
     state.pinned = false;
+    state.anchorEl = null;
     tip.hidden = true;
     tip.classList.remove('is-pinned');
     setFocus(null);
@@ -848,12 +852,12 @@ footer { font-size: 12px; color: var(--muted); }
     box.addEventListener('pointerover', e => {
       const b = btnOf(e.target);
       if (!b || e.pointerType !== 'mouse' || state.pinned) return;
-      show(b.dataset.legend, { rect: b.getBoundingClientRect() }, false);
+      show(b.dataset.legend, { rect: b.getBoundingClientRect() }, false, b);
     });
     box.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' && !state.pinned) hide(); });
     box.addEventListener('focusin', e => {
       const b = btnOf(e.target);
-      if (b && !state.pinned) show(b.dataset.legend, { rect: b.getBoundingClientRect() }, false);
+      if (b) show(b.dataset.legend, { rect: b.getBoundingClientRect() }, state.pinned, b);
     });
     box.addEventListener('focusout', e => {
       if (!state.pinned && !box.contains(e.relatedTarget)) hide();
@@ -863,7 +867,7 @@ footer { font-size: 12px; color: var(--muted); }
       if (!b) return;
       const cat = b.dataset.legend;
       if (state.pinned && state.cat === cat) { hide(); return; }
-      show(cat, { rect: b.getBoundingClientRect() }, true);
+      show(cat, { rect: b.getBoundingClientRect() }, true, b);
       e.stopPropagation();
     });
   }
@@ -874,9 +878,20 @@ footer { font-size: 12px; color: var(--muted); }
   });
   document.addEventListener('click', () => { if (state.pinned) hide(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && state.cat) hide(); });
-  // A rögzített ablak helye a görgetéssel és átméretezéssel elavul (a keskeny képernyős alsó lap kivételével)
-  window.addEventListener('resize', () => { if (state.cat && !narrow()) hide(); });
-  window.addEventListener('scroll', () => { if (state.pinned && !narrow()) hide(); }, { passive: true });
+  // Görgetéskor és átméretezéskor a listához kötött ablak követi a gombját; a térképen
+  // kattintással rögzített ablak bezárul (a keskeny képernyős alsó lap helyben marad)
+  let reflow = 0;
+  function onViewportChange() {
+    if (reflow) return;
+    reflow = requestAnimationFrame(() => {
+      reflow = 0;
+      if (!state.cat || narrow()) return;
+      if (state.anchorEl) place({ rect: state.anchorEl.getBoundingClientRect() });
+      else if (state.pinned) hide();
+    });
+  }
+  window.addEventListener('resize', onViewportChange);
+  window.addEventListener('scroll', onViewportChange, { passive: true });
 
   /* ---------- Indítás ---------- */
   buildMain();
@@ -887,7 +902,7 @@ footer { font-size: 12px; color: var(--muted); }
   wireMap($('#inset'));
   wireLegend();
   let start = 'terv';
-  try { const s = localStorage.getItem('oriasplakat-scen'); if (s && SC[s]) start = s; } catch (e) { /* alapérték */ }
+  try { const s = localStorage.getItem('oriasplakat-scen'); if (Object.prototype.hasOwnProperty.call(SC, s)) start = s; } catch (e) { /* alapérték */ }
   $(`#sc-${start}`).checked = true;
   applyScenario(start);
   $('#scen').addEventListener('change', e => { if (e.target.name === 'scen') applyScenario(e.target.value); });
