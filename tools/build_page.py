@@ -1,4 +1,4 @@
-"""Összeállítja a weboldalt: a sablonba beilleszti a térkép geometriáját.
+"""Összeállítja a weboldalt: a sablonba beilleszti a térkép geometriáját és a kataszter-összesítést.
 
 Használat:
     python3 tools/build_page.py [artifact_kimenet.html]
@@ -27,9 +27,11 @@ def build_fragment():
     parts = re.split(r"(<script\b.*?</script>|<style\b.*?</style>)", template, flags=re.S)
     template = "".join(p if p.startswith(("<script", "<style")) else tidy_text(p) for p in parts)
     template = template.replace("≈ ", "≈" + NBSP)
+    kat = json.loads((ROOT / "data" / "kataszter_osszesites.json").read_text(encoding="utf-8"))
     geo_json = json.dumps(geo, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
-    assert template.count("__GEO__") == 1
-    return template.replace("__GEO__", geo_json)
+    kat_json = json.dumps(kat, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+    assert template.count("__GEO__") == 1 and template.count("__KAT__") == 1
+    return template.replace("__GEO__", geo_json).replace("__KAT__", kat_json)
 
 
 def main():
