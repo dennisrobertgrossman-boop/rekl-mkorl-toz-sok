@@ -1,6 +1,6 @@
 <title>Óriásplakát-tilalom 2026</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="Magyarország térképe: hány óriásplakát van jelenleg az egyes területeken, és a kormányrendelet-tervezet szerint ebből várhatóan mennyi marad meg.">
+<meta name="description" content="Magyarország térképe: hány óriásplakátot tart nyilván jelenleg a reklámkataszter az egyes területeken, és a kormányrendelet-tervezet kihirdetése esetén ebből várhatóan mennyi marad meg.">
 <style>
 :root {
   /* Elrendezés: fent a cím és az országos összesítés, alatta a térkép és a Budapest-nagyítás, legalul a területek listája. */
@@ -9,7 +9,7 @@
   --surface-2: #F4F6F9;
   --ink: #101A26;
   --ink-2: #384556;
-  --muted: #667385;
+  --muted: #5E6B7D;
   --line: #D7DDE5;
   --land: #DCE3EB;
   --land-hi: #CBD5E1;
@@ -24,7 +24,7 @@
 
   /* Két állapot: megszűnik / megmaradhat */
   --gone: #D93A3A;
-  --stay: #0F9470;
+  --stay: #0A7A5C;
 
   /* Budapesti metróvonalak hivatalos színei */
   --m1: #FFD800; --m2: #E41F18; --m3: #005CA5; --m4: #4CA22F;
@@ -85,6 +85,7 @@ h1 { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: c
 .total b { font-family: var(--font-display); font-size: clamp(28px, 3.4vw, 40px); line-height: 1.1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .total--stay b { color: var(--stay); }
 .arrow { color: var(--muted); font-size: 26px; line-height: 1; }
+@media (max-width: 380px) { .totals .arrow { display: none; } }
 
 /* Térkép */
 .board { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 20px; align-items: start; }
@@ -185,12 +186,11 @@ footer ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 4px; }
 .tip-close { display: none; flex: none; border: 0; background: var(--surface-2); color: var(--ink); width: 28px; height: 28px; border-radius: 50%; font: 600 16px/1 var(--font); cursor: pointer; }
 .tip.is-pinned .tip-close { display: grid; place-items: center; }
 .tip-close:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.tip-nums { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.tip-nums span { display: block; font-size: 12px; color: var(--muted); }
-.tip-nums b { display: block; font-family: var(--font-display); font-size: 24px; line-height: 1.15; letter-spacing: -0.015em; font-variant-numeric: tabular-nums; }
+.tip-nums { display: grid; gap: 6px; }
+.tip-nums > div { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.tip-nums span { font-size: 12.5px; color: var(--muted); }
+.tip-nums b { font-family: var(--font-display); font-size: 22px; line-height: 1.2; letter-spacing: -0.015em; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .tip-nums .stay b { color: var(--stay); }
-.bar { height: 8px; border-radius: 99px; background: var(--gone); overflow: hidden; display: flex; }
-.bar i { display: block; height: 100%; background: var(--stay); }
 .tip-note { margin: 0; font-size: 12.5px; color: var(--muted); line-height: 1.45; }
 
 @media (max-width: 1000px) {
@@ -201,6 +201,7 @@ footer ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 4px; }
   .wrap { padding-block: 22px 36px; gap: 16px; }
   .map-card { padding: 12px 10px; }
   .city-label:not(.bud-label) { display: none; }
+  .ring-hit { stroke-width: 30; }
   .bud-label { font-size: 30px; stroke-width: 6px; }
   .areas { padding: 4px 12px 8px; }
   .row-head { display: none; }
@@ -213,6 +214,10 @@ footer ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 4px; }
     top: auto !important; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); width: auto;
   }
 }
+@media (max-width: 360px) {
+  .row .n { font-size: 13.5px; }
+  .areas { padding-inline: 8px; }
+}
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
@@ -222,12 +227,12 @@ footer ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 4px; }
 <main class="wrap">
   <header class="hero">
     <div class="hero-text">
-      <p class="eyebrow">Óriásplakátok · a kormányrendelet-tervezet szerint</p>
+      <p class="eyebrow">Óriásplakátok · a kormányrendelet-tervezet kihirdetése esetén</p>
       <h1>Hol tűnnek el az óriásplakátok?</h1>
-      <p class="lead">Vigye a kurzort egy területre, érintőképernyőn koppintson rá. A felugró ablak mutatja, hány óriásplakát van ott jelenleg, és abból várhatóan mennyi marad meg.</p>
+      <p class="lead">Hány óriásplakátot tart nyilván jelenleg a reklámkataszter az egyes területeken, és abból várhatóan mennyi marad meg. Vigye a kurzort egy területre, érintőképernyőn koppintson rá.</p>
     </div>
-    <div class="totals" aria-label="Országos összesítés">
-      <div class="total"><span>Jelenleg</span><b id="totNow"></b></div>
+    <div class="totals" role="group" aria-label="Országos összesítés">
+      <div class="total"><span>Országosan jelenleg</span><b id="totNow"></b></div>
       <span class="arrow" aria-hidden="true">→</span>
       <div class="total total--stay"><span>Várhatóan megmarad</span><b id="totKeep"></b></div>
     </div>
@@ -238,8 +243,8 @@ footer ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 4px; }
       <svg id="map" role="img" aria-label="Magyarország térképe. A területek számai a térkép alatti listában is szerepelnek."></svg>
       <div class="map-foot">
         <ul class="key">
-          <li style="--c: var(--gone)"><i class="dot"></i>Megszűnik</li>
-          <li style="--c: var(--stay)"><i class="dot"></i>Megmaradhat</li>
+          <li style="--c: var(--gone)"><i class="dot"></i>Nem maradhat fenn</li>
+          <li style="--c: var(--stay)"><i class="dot"></i>Fennmaradhat</li>
         </ul>
         <span>Jelképes ábrázolás · térképalap: Natural Earth</span>
       </div>
@@ -247,7 +252,7 @@ footer ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 4px; }
     <figure class="card inset-card">
       <figcaption class="inset-title">Budapest · nagyítás</figcaption>
       <svg id="inset" role="img" aria-label="Budapest nagyítva, a metróvonalakkal."></svg>
-      <p class="inset-note">A metróvonalak nyomvonala sematikus.</p>
+      <p class="inset-note">A zöld kiemelés a metró föld alatti üzemi területét jelképezi; a vonalak nyomvonala sematikus.</p>
     </figure>
   </section>
 
@@ -262,9 +267,9 @@ footer ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 4px; }
     <details>
       <summary>Források és módszer</summary>
       <ul>
-        <li>Jelenlegi számok: <a href="https://nmhh.hu/szakmai-erdekeltek/reklamkataszter" target="_blank" rel="noopener">a Nemzeti Média- és Hírközlési Hatóság reklámkatasztere</a>, „óriásplakát” típusú eszközök. Belterület és külterület a helyrajzi szám alapján: a 0-val kezdődő helyrajzi szám külterületi; az utcacímmel nyilvántartott eszköz belterületinek számít.</li>
-        <li>Várhatóan megmaradó számok: becslés a Magyar Reklámszövetség két közölt számításából: a tervezet országosan mintegy 90%-ot szüntetne meg, Budapesten 780 óriásplakát maradna (<a href="https://index.hu/belfold/2026/09/21/magyar-reklamszovetseg-tisza-kormany-reklamrendelete-hatasvizsgalat-munkahelyek/" target="_blank" rel="noopener">Index, 2026. szeptember 21.</a>; <a href="https://telex.hu/g7/vallalat/2026/09/28/zsugorodo-plakatpiac-publimont-jcdecaux-kormanyrendelet" target="_blank" rel="noopener">Telex, 2026. szeptember 28.</a>); a fővárosi tilalommal együtt országosan mintegy 95% a csökkenés (<a href="https://iab.hu/2026/09/09/mrsz-kozteruleti-reklamszabalyozas-tervezet/" target="_blank" rel="noopener">IAB Hungary (Interactive Advertising Bureau Hungary), 2026. szeptember 9.</a>).</li>
-        <li>A területi kategóriák a „Óriásplakátok: mi változott és mi változik” című, 2026. október 13-i összefoglalóból származnak. Térképalap: <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a> (közkincs).</li>
+        <li>Jelenlegi számok: <a href="https://nmhh.hu/szakmai-erdekeltek/reklamkataszter" target="_blank" rel="noopener">a Nemzeti Média- és Hírközlési Hatóság reklámkatasztere</a>, „óriásplakát” típusú eszközök. A metróállomásokon lévő tételeket a kiegészítő címleírás alapján azonosítottuk. A belterületi és a külterületi eszközöket a helyrajzi szám alapján különítettük el, azzal a módszertani feltevéssel, hogy a 0-val kezdődő helyrajzi számú ingatlan külterületen fekszik; az utcacímmel nyilvántartott, településen kívüli útszakaszt leíró tételek egy részét arányosan külterületinek becsültük. A felosztás közelítés, nem jogi minősítés.</li>
+        <li>Várhatóan megmaradó számok: becslés a Magyar Reklámszövetség két közölt számításából. A fővárosi tilalom nélkül számolva a tervezet országosan az óriásplakátok mintegy 90%-ának megszűnésével járna, és Budapesten 780 maradna fenn (<a href="https://index.hu/belfold/2026/09/21/magyar-reklamszovetseg-tisza-kormany-reklamrendelete-hatasvizsgalat-munkahelyek/" target="_blank" rel="noopener">Index, 2026. szeptember 21.</a>; <a href="https://telex.hu/g7/vallalat/2026/09/28/zsugorodo-plakatpiac-publimont-jcdecaux-kormanyrendelet" target="_blank" rel="noopener">Telex, 2026. szeptember 28.</a>); a fővárosi tilalommal együtt országosan mintegy 95% a csökkenés (<a href="https://iab.hu/2026/09/09/mrsz-kozteruleti-reklamszabalyozas-tervezet/" target="_blank" rel="noopener">Interactive Advertising Bureau Hungary (IAB Hungary), 2026. szeptember 9.</a>). Vidéken így <span id="keepMethod"></span> óriásplakát maradhat fenn; Budapesten csak a metróállomásokon nyilvántartottak.</li>
+        <li>A területi kategóriák az „Óriásplakátok: mi változott és mi változik” című, 2026. október 13-i összefoglalóból származnak. Térképalap: <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a> (közkincs).</li>
       </ul>
     </details>
   </footer>
@@ -287,31 +292,36 @@ footer ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 4px; }
 
   /* ---------- Számok ---------- */
   // Jelenleg: a reklámkataszter „óriásplakát” típusú eszközei (data/kataszter_osszesites.json).
-  // Megmarad: a Magyar Reklámszövetség két számításából – (a) a tervezet országosan ~90%-ot szüntet meg,
-  // Budapesten 780 maradna; (b) a fővárosi tilalommal együtt ~95% a csökkenés – a vidéken maradó
-  // mennyiség, kifelé kerekítve. Budapesten a fővárosi tilalom miatt nem marad nyilvántartott óriásplakát.
+  // Megmarad: a Magyar Reklámszövetség két számításából – (a) a tervezet a fővárosi tilalom nélkül
+  // országosan ~90%-ot szüntet meg, Budapesten 780 maradna; (b) a fővárosi tilalommal együtt ~95% a
+  // csökkenés. Budapesten csak a metróállomásokon nyilvántartott óriásplakátok maradhatnak fenn, így
+  // vidéken (a) 10% − 780, (b) 5% − metró marad. A sávokat 50-esre kifelé kerekítjük.
   const O = KAT.oriasplakat;
-  const NAT = O.orszagos, BUD = O.budapest, VID = O.videk, BEL = O.videk_belterulet, KUL = O.videk_kulterulet;
-  const keepA = NAT * (1 - 0.90) - 780, keepB = NAT * (1 - 0.95);
-  const KEEP = [Math.floor(Math.min(keepA, keepB) / 100) * 100, Math.ceil(Math.max(keepA, keepB) / 100) * 100];
+  const NAT = O.orszagos, BUD = O.budapest, METRO = O.budapest_metro, VID = O.videk;
+  const KUL = [O.videk_kulterulet_hrsz, O.videk_kulterulet_hrsz + O.videk_kulterulet_becsult_utcacimes];
+  const vidA = NAT * 0.10 - 780, vidB = NAT * 0.05 - METRO;
+  const VKEEP = [Math.min(vidA, vidB), Math.max(vidA, vidB)];
+  const NKEEP = [Math.min(vidA + METRO, NAT * 0.05), Math.max(vidA + METRO, NAT * 0.05)];
+  const BEL = [VID - KUL[1], VID - KUL[0]];
+  const BELALT = [BEL[0] - VKEEP[1], BEL[1] - VKEEP[0]];
+  const out50 = ([a, b]) => [Math.floor(a / 50) * 50, Math.ceil(b / 50) * 50];
   const fmt = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-  const rng = ([a, b]) => `≈ ${fmt(a)}–${fmt(b)}`;
-  const round100 = n => Math.round(n / 100) * 100;
-  const mid = ([a, b]) => (a + b) / 2;
+  const rng = r => { const [a, b] = out50(r); return `${fmt(a)}–${fmt(b)}`; };
 
+  // share: a megmaradó hányad (a lista pontjának színéhez)
   const CATS = {
-    budapest: { name: 'Budapest', now: fmt(BUD), keep: '0', share: 0,
-      note: 'A fővárosi tilalom alól csak a metró föld alatti üzemi területe kivétel.' },
-    videk: { name: 'Az ország többi része', now: fmt(VID), keep: rng(KEEP), share: mid(KEEP) / VID,
+    budapest: { name: 'Budapest', now: fmt(BUD), keep: fmt(METRO), share: METRO / BUD,
+      note: 'A fővárosi tilalom miatt csak a metró föld alatti üzemi területén maradhat fenn óriásplakát; a tervezet ezen nem változtat.' },
+    metro: { name: 'Metró föld alatti üzemi területe', sub: true, now: fmt(METRO), keep: fmt(METRO), share: 1,
+      note: 'A metróállomásokon nyilvántartott óriásplakátok. A fővárosi tilalom erre a területre nem terjed ki, a tervezet szerint itt fennmaradhat.' },
+    videk: { name: 'Az ország többi része (vidék)', now: fmt(VID), keep: rng(VKEEP), share: (VKEEP[0] + VKEEP[1]) / 2 / VID,
       note: 'Budapest nélkül, a vidéki területek együtt.' },
-    belterulet: { name: 'Belterület általában', sub: true, now: rng([round100(BEL - KEEP[1]), round100(BEL - KEEP[0])]), keep: '0', share: 0,
-      note: 'Lakó-, vegyes és belvárosi övezet, vidéken.' },
-    gazdasagi: { name: 'Gazdasági és nagy kereskedelmi övezet', sub: true, now: rng(KEEP), keep: rng(KEEP), share: 1,
-      note: 'Az ezekkel határos útszakaszokkal és a gyalogos aluljárókkal együtt, vidéken.' },
-    kulterulet: { name: 'Külterület', sub: true, now: fmt(KUL), keep: '0', share: 0,
-      note: 'Többek között a közút lakott területen kívüli szakasza mellett, vidéken.' },
-    metro: { name: 'Metró föld alatti üzemi területe', sub: true, now: 'nincs külön', keep: 'megmarad', share: 1,
-      note: 'Budapesten csak itt maradhat óriásplakát. A reklámkataszterben ilyen tétel külön nem azonosítható.' }
+    belterulet: { name: 'Belterület általában', sub: true, now: rng(BELALT), keep: '0', share: 0,
+      note: 'Vidéken a belterület azon része, amely nem tartozik a tervezetben felsorolt övezetek közé, például lakó-, vegyes és belvárosi övezet. A jelenlegi szám becslés: a reklámkataszter az övezetet nem tartalmazza.' },
+    gazdasagi: { name: 'Gazdasági és nagy kereskedelmi övezet, gyalogos aluljáró', sub: true, now: rng(VKEEP), keep: rng(VKEEP), share: 1,
+      note: 'Vidéken: gazdasági terület övezet, nagy bevásárlóközpont és nagy kiterjedésű kereskedelmi célú terület különleges övezet, az ezekkel közvetlenül határos közút lakott területi szakasza, valamint gyalogos aluljáró. A tervezet szerint itt fennmaradhat. A szám becslés: a reklámkataszter az övezetet nem tartalmazza.' },
+    kulterulet: { name: 'Külterület', sub: true, now: rng(KUL), keep: '0', share: 0,
+      note: 'Vidéken a külterületen nyilvántartott óriásplakátok, közöttük a közút lakott területen kívüli szakasza mellettiek. Az útmenti sávban a tilalom már hatályos; a mezőgazdasági, zöld-, erdő-, természetközeli és vízgazdálkodási övezetben a tervezet szerint egyéb reklámeszköz nem maradhat fenn.' }
   };
   const ORDER = ['budapest', 'metro', 'videk', 'belterulet', 'gazdasagi', 'kulterulet'];
 
@@ -401,14 +411,18 @@ footer ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 4px; }
       b.id = `row-${cat}`;
       b.dataset.row = cat;
       b.setAttribute('aria-label', `${c.name}: jelenleg ${c.now}, várhatóan megmarad ${c.keep}.`);
-      b.innerHTML = `<span class="name"><i class="dot" style="--c: var(${c.share > 0 ? '--stay' : '--gone'})"></i>${c.name}</span>
+      const col = c.share >= 1 ? '--stay' : c.share > 0 ? '--muted' : '--gone';
+      b.innerHTML = `<span class="name"><i class="dot" style="--c: var(${col})"></i>${c.name}</span>
         <span class="n"><small>Jelenleg</small>${c.now}</span>
         <span class="n${c.share > 0 ? ' n--stay' : ''}"><small>Várhatóan megmarad</small>${c.keep}</span>`;
       box.appendChild(b);
     }
     $('#totNow').textContent = fmt(NAT);
-    $('#totKeep').textContent = rng(KEEP);
-    $('#srcLine').textContent = `Jelenlegi számok: a Nemzeti Média- és Hírközlési Hatóság (NMHH) reklámkatasztere, ${KAT.allapot_hu.replace(/\.$/, '')}-i állapot. Várhatóan megmaradó számok: becslés a Magyar Reklámszövetség közölt számításaiból.`;
+    $('#totKeep').textContent = rng(NKEEP);
+    $('#keepMethod').textContent = rng(VKEEP);
+    const day = Number((KAT.allapot_hu.match(/(\d+)\.$/) || [])[1]);
+    const datum = KAT.allapot_hu.replace(/\.$/, '') + (day === 1 ? '-jei' : '-i');
+    $('#srcLine').textContent = `Jelenlegi számok: a Nemzeti Média- és Hírközlési Hatóság reklámkatasztere, ${datum} állapot. Várhatóan megmaradó számok: becslés a Magyar Reklámszövetség közölt számításaiból. A sávos számok becslések.`;
   }
 
   /* ---------- Felugró ablak ---------- */
@@ -419,7 +433,6 @@ footer ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 4px; }
     tip.innerHTML = `
       <div class="tip-top"><h3 class="tip-title">${c.name}</h3><button class="tip-close" type="button" aria-label="Bezárás">×</button></div>
       <div class="tip-nums"><div><span>Jelenleg</span><b>${c.now}</b></div><div class="${c.share > 0 ? 'stay' : ''}"><span>Várhatóan megmarad</span><b>${c.keep}</b></div></div>
-      <div class="bar" role="img" aria-label="${Math.round(c.share * 100)}% marad meg"><i style="width:${c.share * 100}%"></i></div>
       <p class="tip-note">${c.note}</p>`;
   }
 
@@ -438,6 +451,8 @@ footer ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 4px; }
     tip.hidden = false;
     setFocus(cat);
     place(pos);
+    // Keskeny képernyőn az alsó lap ne takarja el a lista végét
+    document.body.style.paddingBottom = narrow() ? `${tip.offsetHeight + 24}px` : '';
   }
 
   function hide() {
@@ -447,6 +462,7 @@ footer ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 4px; }
     tip.hidden = true;
     tip.classList.remove('is-pinned');
     setFocus(null);
+    document.body.style.paddingBottom = '';
   }
 
   const narrow = () => window.matchMedia('(max-width: 620px)').matches;
@@ -500,7 +516,7 @@ footer ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 4px; }
     box.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' && !state.pinned) hide(); });
     box.addEventListener('focusin', e => {
       const r = rowOf(e.target);
-      if (r) show(r.dataset.row, { rect: r.getBoundingClientRect() }, state.pinned, r);
+      if (r) show(r.dataset.row, { rect: r.getBoundingClientRect() }, false, r);
     });
     box.addEventListener('focusout', e => { if (!state.pinned && !box.contains(e.relatedTarget)) hide(); });
     box.addEventListener('click', e => {

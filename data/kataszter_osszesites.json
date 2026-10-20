@@ -5,13 +5,29 @@
   "oriasplakat": {
     "orszagos": 20562,
     "budapest": 8318,
-    "budapest_kulterulet": 440,
+    "budapest_metro": 251,
     "videk": 12244,
-    "videk_belterulet": 11295,
-    "videk_belterulet_hrsz": 4371,
-    "videk_belterulet_utcacim": 6924,
-    "videk_kulterulet": 949,
-    "budapest_metro_kulcsszo": 3,
+    "videk_kulterulet_hrsz": 1027,
+    "videk_kulterulet_becsult_utcacimes": 274,
+    "videk_belterulet_hrsz": 4571,
+    "videk_utcacim": 6646,
+    "kulterulet_becsles": {
+      "autopalya_km": {
+        "utcacimes_tetel": 169,
+        "referencia_tetel": 58,
+        "kulterulet_arany": 0.776
+      },
+      "varoshatar": {
+        "utcacimes_tetel": 161,
+        "referencia_tetel": 65,
+        "kulterulet_arany": 0.477
+      },
+      "fout_km": {
+        "utcacimes_tetel": 397,
+        "referencia_tetel": 718,
+        "kulterulet_arany": 0.167
+      }
+    },
     "videk_megyenkent": {
       "Pest": 1935,
       "Győr-Moson-Sopron": 932,
