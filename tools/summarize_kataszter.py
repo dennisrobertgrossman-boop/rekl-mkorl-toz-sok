@@ -5,7 +5,8 @@ Használat:
 
 - Budapest: a település „Budapest”, vagy a vármegye/kerület mező budapesti kerületet jelöl.
   (Az irányítószám-mező nem megbízható: vidéki eszközöknél is előfordul 1-gyel kezdődő szám.)
-- Metró: budapesti tétel, amelynek kiegészítő címleírása „METRÓ”-val kezdődik.
+- Metró: budapesti tétel, amelynek kiegészítő címleírása „METRÓ”-val kezdődik, a felszíni Pillangó utca és
+  Örs vezér tere állomás (HRSZ_39206/32) nélkül.
 - Külterület (módszertani feltevés, nem jogi minősítés): a helyrajzi szám 0-val kezdődik. A helyrajzi számot
   a cím, ennek hiányában a kiegészítő címleírás mezőben keressük. Az utcacímmel nyilvántartott vidéki
   eszközök közül a településen kívüli útszakaszt leíró tételeket arányosan becsüljük külterületinek
@@ -27,7 +28,7 @@ df = pd.read_excel(xl, sheet_name=sheet, header=1, dtype=str)
 df.columns = COLS
 snapshot = re.search(r"\((.*?)\)", sheet).group(1) if "(" in sheet else sheet
 
-MARKER_BEFORE = re.compile(r"(?:hrsz|helyrajzi\s*sz[aá]m)\.?\s*[:.]?\s*(\d[\d/]*)", re.I)
+MARKER_BEFORE = re.compile(r"(?:hrsz|\bhr\.|helyrajzi\s*sz[aá]m)\.?\s*[:.]?\s*(\d[\d/]*)", re.I)
 MARKER_AFTER = re.compile(r"(?<![\d/])(\d[\d/]*)\.?\s*(?:hrsz|helyrajzi)", re.I)
 BARE_FIELD = re.compile(r"\s*(\d[\d/]*)\.?\s*")
 BARE_ZERO = re.compile(r"(?<![\d/])(0\d*/\d+)(?![\d/])")
@@ -88,7 +89,8 @@ o = df[df["tipus"] == "óriásplakát"]
 
 bud = o[o["budapest"]]
 vid = o[~o["budapest"]]
-metro = bud[bud["kieg"].fillna("").str.match(r"^\s*METR[OÓ]\b", case=False)]
+FELSZINI = {"HRSZ_39206/32"}  # Pillangó utca, Örs vezér tere: felszíni M2-állomás
+metro = bud[bud["kieg"].fillna("").str.match(r"^\s*METR[OÓ]\b", case=False) & ~bud["cim"].isin(FELSZINI)]
 
 vid_kul = vid[vid["fold"] == "kulterulet"]
 vid_utca = vid[vid["fold"] == "utcacim"]
