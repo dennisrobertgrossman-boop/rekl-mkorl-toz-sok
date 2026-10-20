@@ -1,9 +1,9 @@
 <title>Óriásplakát-tilalom 2026</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="Interaktív Magyarország-térkép: a 2026-os óriásplakát-szabályozás területi kategóriái és a becsült plakátvesztés Budapesten és vidéken.">
+<meta name="description" content="Magyarország térképe: hány óriásplakát van jelenleg az egyes területeken, és a kormányrendelet-tervezet szerint ebből várhatóan mennyi marad meg.">
 <style>
 :root {
-  /* Elrendezés: balra a térkép (a kurzorral bejárható főszereplő), jobbra a Budapest-nagyítás és az összesítő számok, alatta a területi kategóriák rácsa. */
+  /* Elrendezés: fent a cím és az országos összesítés, alatta a térkép és a Budapest-nagyítás, legalul a területek listája. */
   --bg: #EDF0F4;
   --surface: #FFFFFF;
   --surface-2: #F4F6F9;
@@ -22,25 +22,18 @@
   --shadow: 0 1px 2px rgba(16, 26, 38, .06), 0 10px 30px rgba(16, 26, 38, .07);
   --shadow-lg: 0 2px 6px rgba(16, 26, 38, .08), 0 18px 48px rgba(16, 26, 38, .18);
 
-  /* Jogi állapotok (a forrásdokumentum jelmagyarázata szerint) */
-  --st-lehet: #0F9470;
-  --st-meglevo: #C58700;
-  --st-nincs: #6F5FC2;
-  --st-tilos: #D93A3A;
+  /* Két állapot: megszűnik / megmaradhat */
+  --gone: #D93A3A;
+  --stay: #0F9470;
 
   /* Budapesti metróvonalak hivatalos színei */
-  --m1: #FFD800;
-  --m2: #E41F18;
-  --m3: #005CA5;
-  --m4: #4CA22F;
-  --m1-ink: #1A1A1A;
-  --m-ink: #FFFFFF;
+  --m1: #FFD800; --m2: #E41F18; --m3: #005CA5; --m4: #4CA22F;
+  --m1-ink: #1A1A1A; --m-ink: #FFFFFF;
 
   --font: "Segoe UI", "Segoe UI Variable Text", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
   --font-display: "Segoe UI Variable Display", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
   --r-lg: 18px;
   --r-md: 13px;
-  --r-sm: 9px;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -49,7 +42,7 @@
     --accent: #86A8FF; --casing: #DCE4EE; --shadow-c: #000000;
     --shadow: 0 1px 2px rgba(0, 0, 0, .35), 0 10px 30px rgba(0, 0, 0, .30);
     --shadow-lg: 0 2px 6px rgba(0, 0, 0, .40), 0 18px 48px rgba(0, 0, 0, .55);
-    --st-lehet: #38CE9E; --st-meglevo: #EDB13B; --st-nincs: #A395F2; --st-tilos: #FF625F;
+    --gone: #FF625F; --stay: #38CE9E;
     color-scheme: dark;
   }
 }
@@ -59,129 +52,86 @@
   --accent: #86A8FF; --casing: #DCE4EE; --shadow-c: #000000;
   --shadow: 0 1px 2px rgba(0, 0, 0, .35), 0 10px 30px rgba(0, 0, 0, .30);
   --shadow-lg: 0 2px 6px rgba(0, 0, 0, .40), 0 18px 48px rgba(0, 0, 0, .55);
-  --st-lehet: #38CE9E; --st-meglevo: #EDB13B; --st-nincs: #A395F2; --st-tilos: #FF625F;
+  --gone: #FF625F; --stay: #38CE9E;
   color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 html { -webkit-text-size-adjust: 100%; }
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--ink);
-  font: 15px/1.55 var(--font);
-  font-feature-settings: "kern" 1;
-}
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--font); }
 a { color: var(--accent); text-underline-offset: 2px; }
-.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
-.num { font-variant-numeric: tabular-nums; }
 
 .wrap {
-  max-width: 1320px;
+  max-width: 1240px;
   margin: 0 auto;
-  padding-block: 32px 56px;
+  padding-block: 32px 48px;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
   display: grid;
   gap: 20px;
 }
-
-/* Fejléc */
-.hero { display: grid; gap: 10px; padding-block: 4px 6px; }
-.eyebrow { margin: 0; font-size: 12px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
-.eyebrow .sep { color: var(--land-edge); margin-inline: .5em; }
-h1 {
-  margin: 0; font-family: var(--font-display); font-weight: 700;
-  font-size: clamp(30px, 4.4vw, 52px); line-height: 1.04; letter-spacing: -0.022em; text-wrap: balance;
-}
-.lead { margin: 0; max-width: 66ch; font-size: 16.5px; color: var(--ink-2); }
-
-/* Fő rács */
-.board { display: grid; grid-template-columns: minmax(0, 1fr) 390px; gap: 20px; align-items: start; }
-.side { display: grid; gap: 20px; min-width: 0; }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); box-shadow: var(--shadow); min-width: 0; }
 
-/* Térképkártya */
-.map-card { padding: 18px 18px 14px; display: grid; gap: 12px; }
-.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; }
-.seg {
-  margin: 0; padding: 4px; border: 1px solid var(--line); border-radius: 15px; background: var(--surface-2);
-  display: grid; grid-template-columns: repeat(3, minmax(0, auto)); gap: 4px; min-width: 0;
-}
-.seg label { position: relative; display: block; }
-.seg input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
-.seg span { display: grid; gap: 1px; padding: 8px 14px; border-radius: 11px; line-height: 1.2; transition: background-color .2s ease, color .2s ease; }
-.seg b { font-size: 14px; font-weight: 600; }
-.seg small { font-size: 11.5px; color: var(--muted); transition: color .2s ease; }
-.seg label:hover span { background: var(--land); }
-.seg input:checked + span { background: var(--ink); color: var(--surface); }
-.seg input:checked + span small { color: var(--surface); opacity: .72; }
-.seg input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
-.scen-desc { flex: 1 1 280px; min-width: 0; max-width: 64ch; display: grid; }
-.scen-desc p { grid-area: 1 / 1; margin: 0; font-size: 13.5px; color: var(--ink-2); visibility: hidden; }
-.scen-desc p.is-cur { visibility: visible; }
-.scen-desc small { display: block; margin-top: 3px; color: var(--muted); font-size: 12px; }
+/* Fejléc és országos összesítés */
+.hero { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 18px 32px; }
+.hero-text { display: grid; gap: 8px; min-width: 0; flex: 1 1 420px; }
+.eyebrow { margin: 0; font-size: 12px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+h1 { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: clamp(30px, 4.4vw, 50px); line-height: 1.05; letter-spacing: -0.022em; text-wrap: balance; }
+.lead { margin: 0; font-size: 16px; color: var(--ink-2); max-width: 60ch; }
+.totals { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.total { display: grid; }
+.total span { font-size: 12.5px; font-weight: 600; color: var(--muted); }
+.total b { font-family: var(--font-display); font-size: clamp(28px, 3.4vw, 40px); line-height: 1.1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.total--stay b { color: var(--stay); }
+.arrow { color: var(--muted); font-size: 26px; line-height: 1; }
 
-.map-wrap { position: relative; }
-#map { display: block; width: 100%; height: auto; overflow: visible; touch-action: manipulation; }
+/* Térkép */
+.board { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 20px; align-items: start; }
+.map-card { padding: 18px 18px 14px; display: grid; gap: 10px; }
+#map, #inset { display: block; width: 100%; height: auto; overflow: visible; touch-action: manipulation; }
 .map-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 18px; margin: 0; font-size: 12.5px; color: var(--muted); }
-.hint { display: inline-flex; align-items: center; gap: 8px; }
-.hint svg { flex: none; }
+.key { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 0; padding: 0; list-style: none; font-size: 13px; color: var(--ink-2); }
+.key li { display: inline-flex; align-items: center; gap: 7px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; background: var(--c); flex: none; }
 
-/* Térképi rétegek */
 .land { fill: var(--land); stroke: var(--land-edge); stroke-width: 1.1; stroke-linejoin: round; }
 .counties { fill: none; stroke: var(--county); stroke-width: .7; pointer-events: none; }
 .lake { fill: var(--water); pointer-events: none; }
 .river { fill: none; stroke: var(--water); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
 .river--s { stroke-width: .9; }
-.road-band { fill: none; stroke: var(--c-kozut); stroke-opacity: .12; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
-.road { fill: none; stroke: var(--c-kozut); stroke-opacity: .85; stroke-width: .9; stroke-linecap: round; stroke-linejoin: round; }
+.road-band { fill: none; stroke: var(--gone); stroke-opacity: .12; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
+.road { fill: none; stroke: var(--gone); stroke-opacity: .85; stroke-width: .9; stroke-linecap: round; stroke-linejoin: round; }
 .road--m { stroke-width: 1.8; stroke-opacity: 1; }
 .hit { fill: none; stroke: transparent; stroke-width: 12; stroke-linecap: round; stroke-linejoin: round; pointer-events: stroke; }
-.urban { fill: var(--c-belterulet); fill-opacity: .6; stroke: var(--c-belterulet); stroke-opacity: .9; stroke-width: .5; stroke-linejoin: round; }
+.urban { fill: var(--gone); fill-opacity: .6; stroke: var(--gone); stroke-opacity: .9; stroke-width: .5; stroke-linejoin: round; }
 .ring-case { fill: none; stroke: var(--surface); stroke-opacity: .85; stroke-width: 3.6; pointer-events: none; }
-.ring { fill: none; stroke: var(--c-gazdasagi); stroke-width: 2; stroke-dasharray: 2.6 2; }
+.ring { fill: none; stroke: var(--stay); stroke-width: 2; stroke-dasharray: 2.6 2; }
 .ring-hit { fill: none; stroke: transparent; stroke-width: 8; pointer-events: stroke; }
-.bud { fill: var(--c-budapest); fill-opacity: .92; stroke: var(--surface); stroke-width: 1.2; stroke-linejoin: round; }
+.bud { fill: var(--gone); fill-opacity: .92; stroke: var(--surface); stroke-width: 1.2; stroke-linejoin: round; }
 .bud-frame { fill: none; stroke: var(--ink-2); stroke-width: .8; stroke-dasharray: 3 3; pointer-events: none; }
 .city-dot { fill: var(--ink); pointer-events: none; }
-.city-label {
-  font: 500 11px var(--font); fill: var(--ink-2); paint-order: stroke; stroke: var(--land); stroke-width: 3px;
-  stroke-linejoin: round; pointer-events: none;
-}
+.city-label { font: 500 11px var(--font); fill: var(--ink-2); paint-order: stroke; stroke: var(--land); stroke-width: 3px; stroke-linejoin: round; pointer-events: none; }
 .bud-label { font-weight: 700; font-size: 12.5px; fill: var(--ink); }
 [data-cat] { cursor: pointer; transition: opacity .22s ease; }
-[data-cat] path, [data-cat] circle, [data-cat] rect { transition: fill .45s ease, stroke .45s ease, fill-opacity .3s ease, stroke-opacity .3s ease; }
 #app[data-focus] [data-cat] { opacity: .2; }
 #app[data-focus="videk"] [data-cat="videk"],
 #app[data-focus="budapest"] [data-cat="budapest"],
 #app[data-focus="belterulet"] [data-cat="belterulet"],
+#app[data-focus="kulterulet"] [data-cat="kulterulet"],
 #app[data-focus="gazdasagi"] [data-cat="gazdasagi"],
-#app[data-focus="metro"] [data-cat="metro"],
-#app[data-focus="kozut"] [data-cat="kozut"],
-#app[data-focus="vedett"] [data-cat="vedett"] { opacity: 1; }
+#app[data-focus="metro"] [data-cat="metro"] { opacity: 1; }
 #app[data-focus="videk"] .land { fill: var(--land-hi); }
-#app[data-focus="belterulet"] .urban { fill-opacity: .88; }
-#app[data-focus="kozut"] .road-band { stroke-opacity: .32; }
-#app[data-focus="gazdasagi"] .ring { stroke-width: 2.4; }
 
 /* Budapest-nagyítás */
 .inset-card { margin: 0; padding: 16px 16px 12px; display: grid; gap: 10px; }
-.card-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 12px; }
-.card-title { margin: 0; font-size: 13px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
-.mchips { display: flex; gap: 5px; }
-.mchip { font: 700 10.5px/1 var(--font); padding: 4px 6px; border-radius: 6px; color: var(--m-ink); }
-.mchip--1 { background: var(--m1); color: var(--m1-ink); }
-.mchip--2 { background: var(--m2); }
-.mchip--3 { background: var(--m3); }
-.mchip--4 { background: var(--m4); }
-#inset { display: block; width: 100%; height: auto; border-radius: var(--r-md); touch-action: manipulation; }
+.inset-title { font-size: 13px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+#inset { border-radius: var(--r-md); }
 .inset-bg { fill: var(--land); }
-.agglo { fill: var(--c-belterulet); fill-opacity: .34; stroke: var(--c-belterulet); stroke-opacity: .5; stroke-width: .8; }
-.bud-in { fill: var(--c-budapest); fill-opacity: .15; stroke: var(--c-budapest); stroke-width: 2.4; stroke-linejoin: round; }
+.agglo { fill: var(--gone); fill-opacity: .3; stroke: var(--gone); stroke-opacity: .45; stroke-width: .8; }
+.bud-in { fill: var(--gone); fill-opacity: .15; stroke: var(--gone); stroke-width: 2.4; stroke-linejoin: round; }
 .danube { fill: none; stroke: var(--water); stroke-width: 9; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
-.m-halo { fill: none; stroke: var(--c-metro); stroke-opacity: .38; stroke-width: 15; stroke-linecap: round; stroke-linejoin: round; }
+.m-halo { fill: none; stroke: var(--stay); stroke-opacity: .38; stroke-width: 15; stroke-linecap: round; stroke-linejoin: round; }
 .m-case { fill: none; stroke: var(--casing); stroke-width: 7.5; stroke-linecap: round; stroke-linejoin: round; }
 .m-line { fill: none; stroke-width: 4.2; stroke-linecap: round; stroke-linejoin: round; }
 .m-line--1 { stroke: var(--m1); } .m-line--2 { stroke: var(--m2); } .m-line--3 { stroke: var(--m3); } .m-line--4 { stroke: var(--m4); }
@@ -192,134 +142,75 @@ h1 {
 .inset-label { font: 600 13px var(--font); fill: var(--ink-2); letter-spacing: .06em; text-transform: uppercase; pointer-events: none; paint-order: stroke; stroke: var(--land); stroke-width: 3px; }
 .inset-note { margin: 0; font-size: 12px; color: var(--muted); }
 
-/* Összesítő számok */
-.kpi-card { padding: 18px; display: grid; gap: 16px; }
-.kpi-main { display: grid; gap: 2px; }
-.kpi-label { margin: 0; font-size: 12.5px; font-weight: 600; color: var(--muted); }
-.kpi-big { margin: 0; font-family: var(--font-display); font-size: clamp(30px, 3.2vw, 40px); font-weight: 700; line-height: 1.08; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
-.kpi-big .unit { font-size: .45em; font-weight: 600; color: var(--muted); letter-spacing: 0; margin-left: 4px; }
-.kpi-sub { margin: 0; font-size: 12.5px; color: var(--ink-2); }
-.kpi-list { display: grid; }
-.kpi-line { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1px 14px; padding-block: 10px; border-top: 1px solid var(--line); }
-.kpi-line b { grid-column: 2; grid-row: 1 / span 2; align-self: center; font-size: 18px; font-variant-numeric: tabular-nums; white-space: nowrap; text-align: right; }
-.kpi-line .kpi-sub { grid-column: 1; }
-.split { display: grid; gap: 10px; }
-.split-row { display: grid; grid-template-columns: 74px minmax(0, 1fr); gap: 4px 10px; align-items: center; font-size: 12.5px; }
-.split-row > span:first-child { font-weight: 600; }
-.split-val { grid-column: 2; color: var(--muted); font-variant-numeric: tabular-nums; }
-.bar { position: relative; height: 10px; border-radius: 99px; background: var(--surface-2); overflow: hidden; display: flex; box-shadow: inset 0 0 0 1px var(--line); }
-.bar i { display: block; height: 100%; transition: width .5s ease; }
-.bar .lost { background: var(--st-tilos); }
-.bar .range { background: repeating-linear-gradient(135deg, var(--st-tilos) 0 3px, transparent 3px 6px); }
-.src { margin: 0; font-size: 11.5px; color: var(--muted); }
-
-/* Kategóriák */
-.legend-card { padding: 18px; display: grid; gap: 14px; }
-.legend-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px 20px; }
-.legend-head h2 { margin: 0; font-family: var(--font-display); font-size: 20px; font-weight: 700; letter-spacing: -0.01em; }
-.key { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 0; padding: 0; list-style: none; font-size: 12.5px; color: var(--ink-2); }
-.key li { display: inline-flex; align-items: center; gap: 6px; }
-.dot { width: 9px; height: 9px; border-radius: 50%; background: var(--c); flex: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 22%, transparent); }
-.legend { display: grid; gap: 14px; }
-.legend-group { display: grid; gap: 8px; }
-.legend-group h3 { margin: 0; font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
-.legend-grid { display: grid; gap: 10px; }
-.legend-grid--sum { grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); }
-.legend-grid--cat { grid-template-columns: repeat(auto-fit, minmax(min(212px, 100%), 1fr)); }
-.cat {
-  --c: var(--st-tilos);
-  display: grid; grid-template-columns: 38px minmax(0, 1fr); grid-template-areas: "sym body" "foot foot";
-  gap: 10px 12px; align-items: start; align-content: space-between;
-  padding: 12px 14px; text-align: left; font: inherit; color: inherit; cursor: pointer;
-  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md);
-  transition: border-color .2s ease, background-color .2s ease;
+/* Területek listája */
+.areas { padding: 8px 18px 10px; }
+.areas h2 { margin: 10px 0 4px; font-family: var(--font-display); font-size: 19px; font-weight: 700; }
+.row-head, .row { display: grid; grid-template-columns: minmax(0, 1fr) 150px 170px; gap: 4px 16px; align-items: center; }
+.row-head { padding: 8px 10px; font-size: 12px; font-weight: 600; color: var(--muted); border-bottom: 1px solid var(--line); }
+.row-head span:not(:first-child), .row .n { text-align: right; }
+.row {
+  width: 100%; padding: 12px 10px; border: 0; border-bottom: 1px solid var(--line); border-radius: 0;
+  background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; transition: background-color .15s ease;
 }
-.cat:hover, .cat.is-on { border-color: var(--c); background: color-mix(in srgb, var(--c) 7%, var(--surface)); }
-.cat:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.cat-sym { grid-area: sym; width: 38px; height: 38px; border-radius: 10px; background: var(--surface-2); display: grid; place-items: center; }
-.cat-body { grid-area: body; display: grid; gap: 2px; min-width: 0; }
-.cat-area { font-size: 10.5px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
-.cat-name { font-weight: 600; font-size: 14.5px; line-height: 1.25; }
-.cat-foot { grid-area: foot; display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; padding-top: 10px; border-top: 1px solid var(--line); }
-.cat-foot { flex-wrap: wrap; }
-.cat-status { flex: 1 1 120px; display: flex; align-items: center; gap: 7px; min-width: 0; font-size: 12.5px; color: var(--ink-2); line-height: 1.3; }
-.cat-num { flex: none; margin-left: auto; text-align: right; display: grid; gap: 1px; }
-.cat-num b { font-size: 15.5px; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.cat-num small { font-size: 11px; color: var(--muted); white-space: nowrap; }
-.legend-note { margin: 0; font-size: 12.5px; color: var(--muted); }
+#rows .row:last-child { border-bottom: 0; }
+.row:hover, .row.is-on { background: var(--surface-2); }
+.row:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.row .name { display: flex; align-items: center; gap: 10px; font-weight: 600; min-width: 0; }
+.row .n { font-variant-numeric: tabular-nums; white-space: nowrap; font-size: 15px; }
+.row .n--stay { color: var(--stay); font-weight: 700; }
+.row .n small { display: none; }
+.row--sub .name { font-weight: 500; padding-left: 20px; }
 
-/* Módszertan és források */
-.notes { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 20px; align-items: start; }
-.note-card { padding: 20px 22px; display: grid; gap: 10px; }
-.note-card h2 { margin: 0; font-family: var(--font-display); font-size: 18px; font-weight: 700; }
-.note-card p, .note-card li { font-size: 13.5px; color: var(--ink-2); max-width: 72ch; }
-.note-card ol, .note-card ul { margin: 0; padding-left: 20px; display: grid; gap: 8px; }
-.note-card p { margin: 0; }
-.note-card b { color: var(--ink); font-weight: 600; }
-.note-card .muted { color: var(--muted); font-size: 12.5px; }
-footer { font-size: 12px; color: var(--muted); }
+footer { font-size: 12.5px; color: var(--muted); display: grid; gap: 6px; }
+footer p { margin: 0; max-width: 100ch; }
+footer details summary { cursor: pointer; width: max-content; max-width: 100%; }
+footer ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 4px; }
 
 /* Felugró ablak */
 .tip {
   position: fixed; z-index: 40; left: 0; top: 0;
-  width: min(330px, calc(100vw - 24px)); max-height: calc(100vh - 24px); overflow: auto;
-  padding: 12px 14px 12px; border-radius: 16px; border: 1px solid var(--line);
+  width: min(300px, calc(100vw - 24px));
+  padding: 14px 16px; border-radius: 16px; border: 1px solid var(--line);
   background: var(--surface);
   background: color-mix(in srgb, var(--surface) 92%, transparent);
   -webkit-backdrop-filter: blur(16px) saturate(1.2); backdrop-filter: blur(16px) saturate(1.2);
   box-shadow: var(--shadow-lg); pointer-events: none;
-  display: grid; gap: 7px;
+  display: grid; gap: 10px;
   animation: tip-in .14s ease-out;
 }
 .tip.is-pinned { pointer-events: auto; }
 @keyframes tip-in { from { opacity: 0; transform: translateY(4px) scale(.985); } to { opacity: 1; transform: none; } }
-.tip-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-.tip-area { font-size: 10.5px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
-.tip-close {
-  display: none; border: 0; background: var(--surface-2); color: var(--ink); width: 28px; height: 28px; border-radius: 50%;
-  font: 600 16px/1 var(--font); cursor: pointer;
-}
+.tip-top { display: flex; justify-content: space-between; align-items: start; gap: 10px; }
+.tip-title { margin: 0; font-size: 16px; font-weight: 700; line-height: 1.25; }
+.tip-close { display: none; flex: none; border: 0; background: var(--surface-2); color: var(--ink); width: 28px; height: 28px; border-radius: 50%; font: 600 16px/1 var(--font); cursor: pointer; }
 .tip.is-pinned .tip-close { display: grid; place-items: center; }
 .tip-close:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.tip-title { margin: 0; font-size: 17px; font-weight: 700; line-height: 1.22; letter-spacing: -0.005em; }
-.tip-sub { margin: -4px 0 0; font-size: 12.5px; color: var(--muted); line-height: 1.4; }
-.tip-status {
-  justify-self: start; margin: 0; display: inline-flex; align-items: center; gap: 7px; padding: 4px 10px 4px 8px;
-  border-radius: 99px; font-size: 12.5px; font-weight: 600; line-height: 1.3;
-  background: color-mix(in srgb, var(--c) 13%, transparent); color: var(--ink);
-}
-.tip-num { display: grid; gap: 0; }
-.tip-big { font-family: var(--font-display); font-size: 28px; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
-.tip-unit { font-size: 12.5px; color: var(--muted); }
-.tip-meta { margin: 0; display: grid; gap: 6px; font-size: 12.5px; }
-.tip-meta div { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 10px; }
-.tip-meta dt { color: var(--muted); }
-.tip-meta dd { margin: 0; color: var(--ink); font-variant-numeric: tabular-nums; }
-.steps { margin: 2px 0 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
-.steps li { display: grid; gap: 2px; padding: 5px 8px; border-radius: 9px; background: var(--surface-2); font-size: 11px; color: var(--muted); line-height: 1.25; }
-.steps li b { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--ink-2); }
-.steps li.is-cur { background: color-mix(in srgb, var(--c) 14%, var(--surface)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c) 55%, transparent); }
-.steps li.is-cur b { color: var(--ink); }
-.tip-note { margin: 0; font-size: 12.5px; color: var(--ink-2); line-height: 1.45; }
-.tip-foot { margin: 0; font-size: 11.5px; color: var(--muted); line-height: 1.4; }
+.tip-nums { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.tip-nums span { display: block; font-size: 12px; color: var(--muted); }
+.tip-nums b { display: block; font-family: var(--font-display); font-size: 24px; line-height: 1.15; letter-spacing: -0.015em; font-variant-numeric: tabular-nums; }
+.tip-nums .stay b { color: var(--stay); }
+.bar { height: 8px; border-radius: 99px; background: var(--gone); overflow: hidden; display: flex; }
+.bar i { display: block; height: 100%; background: var(--stay); }
+.tip-note { margin: 0; font-size: 12.5px; color: var(--muted); line-height: 1.45; }
 
-@media (max-width: 1100px) {
+@media (max-width: 1000px) {
   .board { grid-template-columns: minmax(0, 1fr); }
-  .side { grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); align-items: start; }
-  .notes { grid-template-columns: minmax(0, 1fr); }
+  .inset-card { max-width: 520px; }
 }
 @media (max-width: 620px) {
-  .wrap { padding-block: 22px 40px; gap: 16px; }
-  .map-card { padding: 12px 10px 12px; }
-  .seg { width: 100%; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .wrap { padding-block: 22px 36px; gap: 16px; }
+  .map-card { padding: 12px 10px; }
   .city-label:not(.bud-label) { display: none; }
   .bud-label { font-size: 30px; stroke-width: 6px; }
-  .seg span { padding: 7px 8px; }
-  .seg b { font-size: 13px; }
-  .seg small { font-size: 10.5px; }
+  .areas { padding: 4px 12px 8px; }
+  .row-head { display: none; }
+  .row { grid-template-columns: 1fr 1fr; padding: 12px 4px; }
+  .row .name { grid-column: 1 / -1; }
+  .row .n { text-align: left; }
+  .row .n small { display: block; font-size: 11.5px; font-weight: 400; color: var(--muted); }
   .tip {
     left: max(12px, env(safe-area-inset-left, 0px)) !important; right: max(12px, env(safe-area-inset-right, 0px));
-    top: auto !important; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); width: auto; max-height: 62vh;
+    top: auto !important; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); width: auto;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -330,109 +221,64 @@ footer { font-size: 12px; color: var(--muted); }
 <div id="app">
 <main class="wrap">
   <header class="hero">
-    <p class="eyebrow">Óriásplakát-szabályozás<span class="sep" aria-hidden="true">·</span>Hatásbecslés térképen<span class="sep" aria-hidden="true">·</span>2026. október</p>
-    <h1>Hol tűnnek el az óriásplakátok?</h1>
-    <p class="lead">A 2026. október 1-jén megváltozott szabályok és a kormányrendelet-tervezet hatása területi kategóriánként. Vigye a kurzort Budapest, az ország többi része vagy egy jelölt terület fölé: a felugró ablak mutatja a becsült plakátvesztést.</p>
+    <div class="hero-text">
+      <p class="eyebrow">Óriásplakátok · a kormányrendelet-tervezet szerint</p>
+      <h1>Hol tűnnek el az óriásplakátok?</h1>
+      <p class="lead">Vigye a kurzort egy területre, érintőképernyőn koppintson rá. A felugró ablak mutatja, hány óriásplakát van ott jelenleg, és abból várhatóan mennyi marad meg.</p>
+    </div>
+    <div class="totals" aria-label="Országos összesítés">
+      <div class="total"><span>Jelenleg</span><b id="totNow"></b></div>
+      <span class="arrow" aria-hidden="true">→</span>
+      <div class="total total--stay"><span>Várhatóan megmarad</span><b id="totKeep"></b></div>
+    </div>
   </header>
 
-  <section class="board" aria-label="Térkép és összesítés">
+  <section class="board" aria-label="Térkép">
     <div class="card map-card">
-      <div class="toolbar">
-        <fieldset class="seg" id="scen">
-          <legend class="sr-only">Időállapot</legend>
-          <label><input type="radio" name="scen" id="sc-regen" value="regen"><span><b>Régen</b><small>2026. szeptember 30-ig</small></span></label>
-          <label><input type="radio" name="scen" id="sc-most" value="most"><span><b>Most</b><small>2026. október 1-jétől</small></span></label>
-          <label><input type="radio" name="scen" id="sc-terv" value="terv" checked><span><b>Tervezet szerint</b><small>kihirdetés esetén</small></span></label>
-        </fieldset>
-        <div class="scen-desc" id="scenDesc" aria-live="polite"></div>
+      <svg id="map" role="img" aria-label="Magyarország térképe. A területek számai a térkép alatti listában is szerepelnek."></svg>
+      <div class="map-foot">
+        <ul class="key">
+          <li style="--c: var(--gone)"><i class="dot"></i>Megszűnik</li>
+          <li style="--c: var(--stay)"><i class="dot"></i>Megmaradhat</li>
+        </ul>
+        <span>Jelképes ábrázolás · térképalap: Natural Earth</span>
       </div>
-      <div class="map-wrap">
-        <svg id="map" role="img" aria-label="Magyarország térképe az óriásplakát-szabályozás területi kategóriáival. A kategóriák részletei a térkép alatti listában is elérhetők."></svg>
-      </div>
-      <p class="map-foot">
-        <span class="hint"><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2l9 5-4 1-1.6 4z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>Vigye a kurzort egy területre, érintőképernyőn koppintson rá.</span>
-        <span>Térképalap: Natural Earth · vetület: Egységes Országos Vetület (EOV)</span>
-      </p>
     </div>
-
-    <div class="side">
-      <figure class="card inset-card">
-        <figcaption class="card-head">
-          <span class="card-title">Budapest · nagyítás</span>
-          <span class="mchips" aria-hidden="true"><span class="mchip mchip--1">M1</span><span class="mchip mchip--2">M2</span><span class="mchip mchip--3">M3</span><span class="mchip mchip--4">M4</span></span>
-        </figcaption>
-        <svg id="inset" role="img" aria-label="Budapest nagyítva, a metróvonalakkal."></svg>
-        <p class="inset-note">A metróvonalak nyomvonala sematikus. A főváros körüli foltok az agglomeráció beépített területei (vidék).</p>
-      </figure>
-
-      <section class="card kpi-card" aria-label="Összesítés">
-        <div class="kpi-main">
-          <p class="kpi-label">Becsült plakátvesztés</p>
-          <p class="kpi-big" id="kpiLoss"></p>
-          <p class="kpi-sub" id="kpiLossSub"></p>
-        </div>
-        <div class="kpi-list">
-          <div class="kpi-line"><span class="kpi-label">Nyilvántartott állomány</span><b id="kpiStock"></b><span class="kpi-sub">Budapest 8 393 · vidék ≈ 12 600</span></div>
-          <div class="kpi-line"><span class="kpi-label">Megmaradhat</span><b id="kpiKeep"></b><span class="kpi-sub" id="kpiKeepSub"></span></div>
-        </div>
-        <div class="split" id="split"></div>
-        <p class="src">Állomány: a Nemzeti Média- és Hírközlési Hatóság (NMHH) országos reklámkataszterére hivatkozó sajtóközlések. Megszűnés: becslés, lásd lent.</p>
-      </section>
-    </div>
+    <figure class="card inset-card">
+      <figcaption class="inset-title">Budapest · nagyítás</figcaption>
+      <svg id="inset" role="img" aria-label="Budapest nagyítva, a metróvonalakkal."></svg>
+      <p class="inset-note">A metróvonalak nyomvonala sematikus.</p>
+    </figure>
   </section>
 
-  <section class="card legend-card" aria-labelledby="catTitle">
-    <div class="legend-head">
-      <h2 id="catTitle">Becsült plakátvesztés területenként</h2>
-      <ul class="key" aria-label="Jelmagyarázat">
-        <li style="--c: var(--st-lehet)"><i class="dot"></i>Lehet (fennmaradhat, elhelyezhető)</li>
-        <li style="--c: var(--st-meglevo)"><i class="dot"></i>Csak a meglévő maradhatott, új nem</li>
-        <li style="--c: var(--st-nincs)"><i class="dot"></i>Nincs jogalap (kijelölésig)</li>
-        <li style="--c: var(--st-tilos)"><i class="dot"></i>Tilos</li>
-      </ul>
-    </div>
-    <div class="legend" id="legend"></div>
-    <p class="legend-note">* A belterület általában és a külterületi útmenti sáv a reklámkataszter nyilvános összesítéseiben nem válik el, ezért együtt becsültük őket.</p>
+  <section class="card areas" aria-labelledby="areasTitle">
+    <h2 id="areasTitle">Területenként</h2>
+    <div class="row-head" aria-hidden="true"><span>Terület</span><span>Jelenleg</span><span>Várhatóan megmarad</span></div>
+    <div id="rows"></div>
   </section>
 
-  <div class="notes">
-    <article class="card note-card">
-      <h2>Hogyan számoltunk?</h2>
-      <ol>
-        <li><b>Kiinduló állomány.</b> Országosan ≈ 21 000 óriásplakát szerepel a Nemzeti Média- és Hírközlési Hatóság (NMHH) országos reklámkataszterében (Telex, 2026. június 23.), ebből Budapesten 8 393 (Infostart, 2026. június 25.). A vidéki állomány a kettő különbsége: ≈ 12 600.</li>
-        <li><b>Budapest.</b> A fővárosi tilalom a főváros egész területére kiterjed, egyedüli kivétele a metró föld alatti üzemi területe. A metró felületei a Telex szerint nem szerepelnek a reklámkataszterben, ezért a 8 393 nyilvántartott óriásplakát mindegyike érintett.</li>
-        <li><b>Vidék a tervezet szerint.</b> A Magyar Reklámszövetség (MRSZ) Közterületi Tagozatának két közölt számításából: (a) a tervezet önmagában országosan az óriásplakátok mintegy 90%-át szüntetné meg, Budapesten 8 500-ból 780 maradna; (b) a fővárosi tilalommal együtt országosan mintegy 95% a csökkenés. Vidéken így (a) 21 000 × 10% − 780 ≈ 1 320, (b) 21 000 × 5% ≈ 1 050 óriásplakát maradhat. Kifelé kerekítve ≈ 1 000–1 400 marad és ≈ 11 200–11 600 szűnik meg.</li>
-        <li><b>Most.</b> Kormányrendeleti kijelölés hiányában a teljes nyilvántartott állomány érintett, a 2026. december 31-i eltávolítási határidővel.</li>
-        <li><b>Ami nem bontható.</b> A belterület általában és a külterületi útmenti sáv a nyilvános összesítésekben nem válik el, ezért együtt becsültük őket. A pontos, kategóriánkénti számhoz a kataszter koordinátás Excel-állománya kell.</li>
-        <li><b>Érzékenység.</b> Az MRSZ-becslés 1 százalékpontos eltérése ≈ 210 óriásplakátnyi különbséget jelent.</li>
-      </ol>
-      <p class="muted">A számok a kataszterre hivatkozó sajtóközlésekből származnak, nem a kataszter saját letöltéséből. A jogi besorolás a „Óriásplakátok: mi változott és mi változik” című, 2026. október 13-i összefoglalóból származik; az oldal jogszabályhelyet nem idéz.</p>
-    </article>
-    <article class="card note-card">
-      <h2>Források</h2>
+  <footer>
+    <p id="srcLine"></p>
+    <details>
+      <summary>Források és módszer</summary>
       <ul>
-        <li><a href="https://nmhh.hu/szakmai-erdekeltek/reklamkataszter" target="_blank" rel="noopener">Nemzeti Média- és Hírközlési Hatóság: Reklámkataszter</a></li>
-        <li><a href="https://telex.hu/g7/vallalat/2026/06/23/budapest-reklamrendelet-ner-publimont-mahir-jcdecaux-peron-bkv" target="_blank" rel="noopener">Telex, 2026. június 23.</a> – országos ≈ 21 000 óriásplakát; a metró felületei</li>
-        <li><a href="https://infostart.hu/belfold/2026/06/25/kiss-ambrus-elmondta-hogyan-tunhet-el-tobb-ezer-plakat-es-reklam-budapestrol" target="_blank" rel="noopener">Infostart, 2026. június 25.</a> – Budapest: 8 393 óriásplakát</li>
-        <li><a href="https://iab.hu/2026/09/09/mrsz-kozteruleti-reklamszabalyozas-tervezet/" target="_blank" rel="noopener">IAB Hungary (Interactive Advertising Bureau Hungary), 2026. szeptember 9.</a> – MRSZ: országosan ≈ 95%-os csökkenés</li>
-        <li><a href="https://index.hu/belfold/2026/09/21/magyar-reklamszovetseg-tisza-kormany-reklamrendelete-hatasvizsgalat-munkahelyek/" target="_blank" rel="noopener">Index, 2026. szeptember 21.</a> – MRSZ: a tervezet országosan ≈ 90%-ot szüntet meg</li>
-        <li><a href="https://telex.hu/g7/vallalat/2026/09/28/zsugorodo-plakatpiac-publimont-jcdecaux-kormanyrendelet" target="_blank" rel="noopener">Telex, 2026. szeptember 28.</a> – MRSZ: 8 500 fővárosi óriásplakátból 780 maradna</li>
-        <li><a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a> – térképalap (közkincs)</li>
+        <li>Jelenlegi számok: <a href="https://nmhh.hu/szakmai-erdekeltek/reklamkataszter" target="_blank" rel="noopener">a Nemzeti Média- és Hírközlési Hatóság reklámkatasztere</a>, „óriásplakát” típusú eszközök. Belterület és külterület a helyrajzi szám alapján: a 0-val kezdődő helyrajzi szám külterületi; az utcacímmel nyilvántartott eszköz belterületinek számít.</li>
+        <li>Várhatóan megmaradó számok: becslés a Magyar Reklámszövetség két közölt számításából: a tervezet országosan mintegy 90%-ot szüntetne meg, Budapesten 780 óriásplakát maradna (<a href="https://index.hu/belfold/2026/09/21/magyar-reklamszovetseg-tisza-kormany-reklamrendelete-hatasvizsgalat-munkahelyek/" target="_blank" rel="noopener">Index, 2026. szeptember 21.</a>; <a href="https://telex.hu/g7/vallalat/2026/09/28/zsugorodo-plakatpiac-publimont-jcdecaux-kormanyrendelet" target="_blank" rel="noopener">Telex, 2026. szeptember 28.</a>); a fővárosi tilalommal együtt országosan mintegy 95% a csökkenés (<a href="https://iab.hu/2026/09/09/mrsz-kozteruleti-reklamszabalyozas-tervezet/" target="_blank" rel="noopener">IAB Hungary (Interactive Advertising Bureau Hungary), 2026. szeptember 9.</a>).</li>
+        <li>A területi kategóriák a „Óriásplakátok: mi változott és mi változik” című, 2026. október 13-i összefoglalóból származnak. Térképalap: <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a> (közkincs).</li>
       </ul>
-      <p class="muted">Jelképes ábrázolás: a foltok a nagyobb beépített területeket, a szaggatott gyűrűk a nagyobb városok gazdasági és nagy kereskedelmi övezeteit, a vonalak a fő közúthálózatot mutatják. Az övezetek és a lakott terület tényleges határát a térkép nem jelöli.</p>
-    </article>
-  </div>
-
-  <footer>Készült 2026. október 20-án. A becslések tájékoztató jellegűek; a kataszter Excel-állományából kategóriánként pontosíthatók.</footer>
+    </details>
+  </footer>
 </main>
 <div class="tip" id="tip" role="status" aria-live="polite" hidden></div>
 </div>
 
+<script type="application/json" id="kat">__KAT__</script>
 <script type="application/json" id="geo">__GEO__</script>
 <script>
 (() => {
   'use strict';
   const GEO = JSON.parse(document.getElementById('geo').textContent);
+  const KAT = JSON.parse(document.getElementById('kat').textContent);
   const NS = 'http://www.w3.org/2000/svg';
   const $ = (s, r = document) => r.querySelector(s);
   const app = $('#app');
@@ -440,222 +286,99 @@ footer { font-size: 12px; color: var(--muted); }
   document.documentElement.lang = 'hu';
 
   /* ---------- Számok ---------- */
-  // Állomány: a reklámkataszterre hivatkozó sajtóközlések; megszűnés: becslés (lásd „Hogyan számoltunk?”)
-  const NAT = 21000, BUD = 8393, BUD_DRAFT_KEEP = 780, CUT_A = 0.90, CUT_B = 0.95;
-  const VID = NAT - BUD;
-  const keepA = NAT * (1 - CUT_A) - BUD_DRAFT_KEEP;
-  const keepB = NAT * (1 - CUT_B);
-  const VID_KEEP = [Math.floor(Math.min(keepA, keepB) / 100) * 100, Math.ceil(Math.max(keepA, keepB) / 100) * 100];
-  const VID_R = Math.round(VID / 100) * 100;
-  const VID_LOSS = [VID_R - VID_KEEP[1], VID_R - VID_KEEP[0]];
-  const TOT_LOSS = [Math.round((BUD + VID_LOSS[0]) / 100) * 100, Math.round((BUD + VID_LOSS[1]) / 100) * 100];
-  // Ezres tagolás nem törhető szóközzel, a négyjegyű számoknál is (8 393)
+  // Jelenleg: a reklámkataszter „óriásplakát” típusú eszközei (data/kataszter_osszesites.json).
+  // Megmarad: a Magyar Reklámszövetség két számításából – (a) a tervezet országosan ~90%-ot szüntet meg,
+  // Budapesten 780 maradna; (b) a fővárosi tilalommal együtt ~95% a csökkenés – a vidéken maradó
+  // mennyiség, kifelé kerekítve. Budapesten a fővárosi tilalom miatt nem marad nyilvántartott óriásplakát.
+  const O = KAT.oriasplakat;
+  const NAT = O.orszagos, BUD = O.budapest, VID = O.videk, BEL = O.videk_belterulet, KUL = O.videk_kulterulet;
+  const keepA = NAT * (1 - 0.90) - 780, keepB = NAT * (1 - 0.95);
+  const KEEP = [Math.floor(Math.min(keepA, keepB) / 100) * 100, Math.ceil(Math.max(keepA, keepB) / 100) * 100];
   const fmt = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
   const rng = ([a, b]) => `≈ ${fmt(a)}–${fmt(b)}`;
-  const pct = (a, b) => Math.round(a / b * 100);
-  const vidLossPct = [VID_LOSS[0] / VID_R * 100, VID_LOSS[1] / VID_R * 100];
-
-  const SC = {
-    regen: { short: 'Régen',
-      desc: 'Kiinduló állapot: a meglévő óriásplakátok a legtöbb területen fennmaradhattak, újat nem lehetett telepíteni.' },
-    most: { short: 'Most',
-      desc: 'Óriásplakát csak kormányrendeleti kijelöléssel helyezhető el, ilyen kijelölés még nincs. A nem megfelelő eszközöket 2026. december 31-ig el kell távolítani.' },
-    terv: { short: 'Tervezet',
-      desc: 'A kormányrendelet-tervezet az óriásplakátot csak gazdasági és nagy kereskedelmi övezetben, az ezekkel határos lakott területi útszakaszon, gyalogos aluljáróban és a metró üzemi területén engedné. Budapesten a fővárosi tilalom ettől függetlenül érvényes.' }
-  };
-  const ST_NAME = { lehet: 'Lehet', meglevo: 'Csak meglévő', nincs: 'Nincs jogalap', tilos: 'Tilos' };
-  const JOINT = `${rng(VID_LOSS)}*`;
+  const round100 = n => Math.round(n / 100) * 100;
+  const mid = ([a, b]) => (a + b) / 2;
 
   const CATS = {
-    budapest: {
-      area: 'Budapest', name: 'Budapest', sym: 'bud',
-      sub: 'Közterület és közterületről látható magánterület, a főváros egész közigazgatási területén',
-      stock: `${fmt(BUD)} db`,
-      st: { regen: ['meglevo', 'Meglévő maradhatott, új nem telepíthető', 'Meglévő maradhatott'], most: ['tilos', 'Tilos: fővárosi tilalom', 'Tilos'], terv: ['tilos', 'Tilos: a tervezet ezen nem változtat', 'Tilos'] },
-      loss: { regen: { v: '0', bar: [0, 0] }, most: { v: fmt(BUD), bar: [100, 100] }, terv: { v: fmt(BUD), bar: [100, 100] } },
-      keep: { regen: `${fmt(BUD)} db`, most: '0 db a nyilvántartott állományból', terv: '0 db a nyilvántartott állományból' },
-      note: {
-        regen: `A fővárosban ${fmt(BUD)} óriásplakát szerepel a reklámkataszterben.`,
-        most: `A fővárosi tilalom alól egyedül a metró föld alatti üzemi területe kivétel. A metró felületei a sajtó szerint nem szerepelnek a reklámkataszterben, ezért a ${fmt(BUD)} nyilvántartott óriásplakát mindegyike érintett.`,
-        terv: 'A tervezet a fővárosi tilalmon nem változtat. A Magyar Reklámszövetség (MRSZ) számítása szerint a tervezet önmagában 780 fővárosi óriásplakátot hagyna meg, ezeket azonban a fővárosi tilalom is kizárja.'
-      }
-    },
-    videk: {
-      area: 'Vidék', name: 'Az ország többi része', sym: 'land',
-      sub: 'Budapest nélkül, a vidéki területi kategóriák együtt',
-      stock: `≈ ${fmt(VID_R)} db`,
-      st: { regen: ['meglevo', 'Meglévő maradhatott, új nem telepíthető', 'Meglévő maradhatott'], most: ['nincs', 'Nincs jogalap a kijelölésig', 'Nincs jogalap'], terv: ['tilos', 'Nagyrészt megszűnik, kijelölt övezetben maradhat', 'Nagyrészt megszűnik'] },
-      loss: { regen: { v: '0', bar: [0, 0] }, most: { v: `≈ ${fmt(VID_R)}`, bar: [100, 100] }, terv: { v: rng(VID_LOSS), bar: vidLossPct } },
-      keep: { regen: `≈ ${fmt(VID_R)} db`, most: '0 db', terv: `${rng(VID_KEEP)} db` },
-      note: {
-        regen: `Az országos ≈ ${fmt(NAT)} óriásplakátból Budapesten kívül ≈ ${fmt(VID_R)} áll.`,
-        most: 'Kormányrendeleti kijelölés hiányában a vidéki állomány egésze érintett, a 2026. december 31-i eltávolítási határidővel.',
-        terv: `Megmaradhat ${rng(VID_KEEP)} óriásplakát a gazdasági és nagy kereskedelmi övezetekben, az ezekkel határos útszakaszokon és a gyalogos aluljárókban.`
-      }
-    },
-    belterulet: {
-      area: 'Vidék · belterület', name: 'Belterület általában', sym: 'urban',
-      sub: 'Lakó-, vegyes és belvárosi övezet',
-      stock: 'a vidéki állomány nagyobbik része',
-      st: { regen: ['meglevo', 'Meglévő maradhatott, új nem telepíthető', 'Meglévő maradhatott'], most: ['nincs', 'Nincs jogalap'], terv: ['tilos', 'Nem maradhat fenn'] },
-      loss: { regen: { v: '0', bar: [0, 0] }, most: { v: JOINT, bar: [100, 100], joint: true }, terv: { v: JOINT, bar: [100, 100], joint: true } },
-      keep: { regen: 'mind', most: '0 db', terv: '0 db' },
-      note: {
-        regen: 'Új óriásplakát nem volt telepíthető, a meglévők fennmaradhattak.',
-        most: 'Kijelölés hiányában ezeket 2026. december 31-ig el kell távolítani.',
-        terv: 'Ezek az övezetek nincsenek a tervezet szerint megengedett övezetek között.'
-      }
-    },
-    gazdasagi: {
-      area: 'Vidék · belterület', name: 'Gazdasági és nagy kereskedelmi övezet', sym: 'ring',
-      sub: 'Gazdasági terület övezet, nagy bevásárlóközpont és nagy kiterjedésű kereskedelmi célú terület különleges övezet, valamint az ezekkel közvetlenül határos közút lakott területi szakasza',
-      stock: `${rng(VID_KEEP)} db (vidék, a gyalogos aluljárókkal együtt)`,
-      st: { regen: ['meglevo', 'Meglévő maradhatott, új nem telepíthető', 'Meglévő maradhatott'], most: ['nincs', 'Nincs jogalap'], terv: ['lehet', 'Fennmaradhat, elhelyezhető'] },
-      loss: { regen: { v: '0', bar: [0, 0] }, most: { v: rng(VID_KEEP), bar: [100, 100] }, terv: { v: '0', bar: [0, 0] } },
-      keep: { regen: 'mind', most: '0 db', terv: `${rng(VID_KEEP)} db` },
-      note: {
-        regen: 'Új óriásplakát itt sem volt telepíthető.',
-        most: 'Ha 2026. december 31-ig nincs kormányrendeleti kijelölés, ezeket is el kell távolítani.',
-        terv: 'A tervezet szerint a meglévő óriásplakát fennmaradhat és átalakítható, új is elhelyezhető. Budapesten ezek az övezetek is a fővárosi tilalom alá esnek.'
-      }
-    },
-    metro: {
-      area: 'Országos · a térképen Budapest', name: 'Gyalogos aluljáró, metró üzemi területe', sym: 'metro',
-      sub: 'A nagyításon Budapest metróvonalai, sematikus nyomvonallal',
-      stock: 'a metró felületei nem szerepelnek a reklámkataszterben',
-      st: { regen: ['meglevo', 'Meglévő maradhatott'], most: ['nincs', 'Nincs jogalap'], terv: ['lehet', 'Fennmaradhat, elhelyezhető'] },
-      loss: { regen: { v: '0' }, most: { v: '0', unit: 'a nyilvántartott állományból' }, terv: { v: '0', unit: 'a nyilvántartott állományból' } },
-      keep: { regen: 'mind', most: 'a metró felületei', terv: 'mind' },
-      note: {
-        regen: 'A vidéki gyalogos aluljárók óriásplakátjait a gazdasági övezetekkel együtt becsültük.',
-        most: 'Budapesten a fővárosi tilalom alól egyedül a metró föld alatti üzemi területe kivétel. A vidéki gyalogos aluljárók óriásplakátjait a gazdasági övezetekkel együtt becsültük.',
-        terv: 'A tervezet szerint fennmaradhat és elhelyezhető. Budapesten a fővárosi tilalom alól egyedül a metró föld alatti üzemi területe kivétel.'
-      }
-    },
-    kozut: {
-      area: 'Vidék · külterület', name: 'Közút lakott területen kívüli szakasza mellett', sym: 'road',
-      sub: 'A közút tengelyétől 50 m-es, autópálya, autóút és főútvonal mentén 100 m-es külterületi sáv',
-      stock: 'külön nem ismert (a vidéki állomány része)',
-      st: { regen: ['meglevo', 'Tilos, egy kivétellel: a 2010. december 31-ig nem gyorsforgalmi út mentén kihelyezett, 12A/0-ás ív méretű reklámtábla maradhatott', 'Tilos, egy kivétellel'], most: ['tilos', 'Tilos, kivétel nélkül'], terv: ['tilos', 'Nem maradhat fenn'] },
-      loss: { regen: { v: '0' }, most: { v: 'mind*', unit: 'az itt álló óriásplakátok', joint: true }, terv: { v: 'mind*', unit: 'az itt álló óriásplakátok', joint: true } },
-      keep: { regen: 'a kivétel körébe eső reklámtáblák', most: '0 db', terv: '0 db' },
-      note: {
-        regen: 'Csak a kivétel körébe eső, régi reklámtáblák állhattak itt.',
-        most: 'A tilalom már hatályos, a nem megfelelő eszközöket 2026. december 31-ig el kell távolítani.',
-        terv: 'A tervezet szerint mezőgazdasági, zöld-, erdő-, természetközeli és vízgazdálkodási övezetben egyéb reklámeszköz nem maradhat fenn.'
-      }
-    },
-    vedett: {
-      area: 'Országos', name: 'Védett területek', sym: 'shield',
-      sub: 'Műemlék, történeti kert stb.',
-      stock: '0 db: jogszerűen korábban sem állhatott itt óriásplakát',
-      st: { regen: ['tilos', 'Tilos'], most: ['tilos', 'Tilos'], terv: ['tilos', 'Tilos'] },
-      loss: { regen: { v: '0', unit: 'nincs változás' }, most: { v: '0', unit: 'nincs változás' }, terv: { v: '0', unit: 'nincs változás' } },
-      keep: { regen: '–', most: '–', terv: '–' },
-      note: {
-        regen: 'A kis kiterjedésű védett területek a térkép léptékén nem ábrázolhatók.',
-        most: 'Nincs változás. A kis kiterjedésű védett területek a térkép léptékén nem ábrázolhatók.',
-        terv: 'Nincs változás. A kis kiterjedésű védett területek a térkép léptékén nem ábrázolhatók.'
-      }
-    }
+    budapest: { name: 'Budapest', now: fmt(BUD), keep: '0', share: 0,
+      note: 'A fővárosi tilalom alól csak a metró föld alatti üzemi területe kivétel.' },
+    videk: { name: 'Az ország többi része', now: fmt(VID), keep: rng(KEEP), share: mid(KEEP) / VID,
+      note: 'Budapest nélkül, a vidéki területek együtt.' },
+    belterulet: { name: 'Belterület általában', sub: true, now: rng([round100(BEL - KEEP[1]), round100(BEL - KEEP[0])]), keep: '0', share: 0,
+      note: 'Lakó-, vegyes és belvárosi övezet, vidéken.' },
+    gazdasagi: { name: 'Gazdasági és nagy kereskedelmi övezet', sub: true, now: rng(KEEP), keep: rng(KEEP), share: 1,
+      note: 'Az ezekkel határos útszakaszokkal és a gyalogos aluljárókkal együtt, vidéken.' },
+    kulterulet: { name: 'Külterület', sub: true, now: fmt(KUL), keep: '0', share: 0,
+      note: 'Többek között a közút lakott területen kívüli szakasza mellett, vidéken.' },
+    metro: { name: 'Metró föld alatti üzemi területe', sub: true, now: 'nincs külön', keep: 'megmarad', share: 1,
+      note: 'Budapesten csak itt maradhat óriásplakát. A reklámkataszterben ilyen tétel külön nem azonosítható.' }
   };
-  const ORDER = ['budapest', 'videk', 'belterulet', 'gazdasagi', 'metro', 'kozut', 'vedett'];
+  const ORDER = ['budapest', 'metro', 'videk', 'belterulet', 'gazdasagi', 'kulterulet'];
 
-  const KPI = {
-    regen: { loss: '0', lossSub: 'Kiinduló állapot: megszűnő óriásplakát nincs.', keep: `≈ ${fmt(NAT)}`, keepSub: 'a teljes állomány' },
-    most: { loss: `≈ ${fmt(NAT)}`, lossSub: '100%, ha 2026. december 31-ig nincs kormányrendeleti kijelölés.', keep: '0', keepSub: 'a nyilvántartott állományból' },
-    terv: { loss: rng(TOT_LOSS), lossSub: `${pct(TOT_LOSS[0], NAT)}–${pct(TOT_LOSS[1], NAT)}% · Budapest ${fmt(BUD)}, vidék ${rng(VID_LOSS)}`, keep: rng(VID_KEEP), keepSub: 'csak vidéken, a kijelölt övezetekben' }
-  };
-  const SPLIT = {
-    regen: [{ n: 'Budapest', bar: [0, 0], v: `0 / ${fmt(BUD)}` }, { n: 'Vidék', bar: [0, 0], v: `0 / ≈ ${fmt(VID_R)}` }],
-    most: [{ n: 'Budapest', bar: [100, 100], v: `${fmt(BUD)} / ${fmt(BUD)}` }, { n: 'Vidék', bar: [100, 100], v: `≈ ${fmt(VID_R)} / ≈ ${fmt(VID_R)}` }],
-    terv: [{ n: 'Budapest', bar: [100, 100], v: `${fmt(BUD)} / ${fmt(BUD)}` }, { n: 'Vidék', bar: vidLossPct, v: `${rng(VID_LOSS)} / ≈ ${fmt(VID_R)}` }]
-  };
-
-  /* ---------- SVG segédek ---------- */
+  /* ---------- Térkép ---------- */
   function mk(tag, attrs, parent) {
     const e = document.createElementNS(NS, tag);
     for (const k in attrs) e.setAttribute(k, attrs[k]);
     if (parent) parent.appendChild(e);
     return e;
   }
-  const group = (svg, cat, cls) => mk('g', cat ? { 'data-cat': cat, class: cls || '' } : { class: cls || '' }, svg);
+  const group = (svg, cat) => mk('g', cat ? { 'data-cat': cat } : {}, svg);
 
   function buildMain() {
     const m = GEO.main;
     const svg = $('#map');
     svg.setAttribute('viewBox', `0 0 ${m.w} ${m.h}`);
-    const defs = mk('defs', {}, svg);
-    const f = mk('filter', { id: 'lift', x: '-6%', y: '-6%', width: '112%', height: '118%' }, defs);
+    const f = mk('filter', { id: 'lift', x: '-6%', y: '-6%', width: '112%', height: '118%' }, mk('defs', {}, svg));
     mk('feDropShadow', { dx: 0, dy: 6, stdDeviation: 9, style: 'flood-color: var(--shadow-c); flood-opacity: .14' }, f);
 
-    const gV = group(svg, 'videk');
-    mk('path', { d: m.country, class: 'land', filter: 'url(#lift)' }, gV);
+    mk('path', { d: m.country, class: 'land', filter: 'url(#lift)' }, group(svg, 'videk'));
     mk('path', { d: m.counties, class: 'counties' }, svg);
     mk('path', { d: m.lakes, class: 'lake' }, svg);
     mk('path', { d: m.smallRivers, class: 'river river--s' }, svg);
     mk('path', { d: m.rivers, class: 'river' }, svg);
 
-    const gR = group(svg, 'kozut');
-    mk('path', { d: m.mainroads, class: 'road-band' }, gR);
-    mk('path', { d: m.motorways, class: 'road-band' }, gR);
-    mk('path', { d: m.mainroads, class: 'road' }, gR);
-    mk('path', { d: m.motorways, class: 'road road--m' }, gR);
-    mk('path', { d: m.mainroads, class: 'hit' }, gR);
-    mk('path', { d: m.motorways, class: 'hit' }, gR);
-
-    const gU = group(svg, 'belterulet');
-    mk('path', { d: m.urban, class: 'urban' }, gU);
+    const gR = group(svg, 'kulterulet');
+    for (const [d, cls] of [[m.mainroads, 'road-band'], [m.motorways, 'road-band'], [m.mainroads, 'road'], [m.motorways, 'road road--m'], [m.mainroads, 'hit'], [m.motorways, 'hit']]) {
+      mk('path', { d, class: cls }, gR);
+    }
+    mk('path', { d: m.urban, class: 'urban' }, group(svg, 'belterulet'));
 
     const gG = group(svg, 'gazdasagi');
     for (const c of m.cities) {
-      mk('circle', { cx: c.x, cy: c.y, r: 9, class: 'ring-case' }, gG);
-      mk('circle', { cx: c.x, cy: c.y, r: 9, class: 'ring' }, gG);
-      mk('circle', { cx: c.x, cy: c.y, r: 9, class: 'ring-hit' }, gG);
+      for (const cls of ['ring-case', 'ring', 'ring-hit']) mk('circle', { cx: c.x, cy: c.y, r: 9, class: cls }, gG);
     }
+    mk('path', { d: m.budapest, class: 'bud' }, group(svg, 'budapest'));
 
-    const gB = group(svg, 'budapest');
-    mk('path', { d: m.budapest, class: 'bud' }, gB);
-
-    const gL = group(svg, null, 'labels');
+    const gL = group(svg, null);
     gL.setAttribute('aria-hidden', 'true');
     for (const c of m.cities) {
       mk('circle', { cx: c.x, cy: c.y, r: 2.1, class: 'city-dot' }, gL);
-      if (c.label) {
-        const t = mk('text', { x: c.x + 12, y: c.y + 3.6, class: 'city-label' }, gL);
-        t.textContent = c.name;
-      }
+      if (c.label) mk('text', { x: c.x + 12, y: c.y + 3.6, class: 'city-label' }, gL).textContent = c.name;
     }
     const [x0, y0, x1, y1] = m.budapestBox;
     mk('rect', { x: x0 - 5, y: y0 - 5, width: x1 - x0 + 10, height: y1 - y0 + 10, rx: 6, class: 'bud-frame' }, gL);
-    const bl = mk('text', { x: x1 + 9, y: y0 + 4, class: 'city-label bud-label' }, gL);
-    bl.textContent = 'Budapest';
+    mk('text', { x: x1 + 9, y: y0 + 4, class: 'city-label bud-label' }, gL).textContent = 'Budapest';
   }
 
   function buildInset() {
     const i = GEO.inset;
     const svg = $('#inset');
     svg.setAttribute('viewBox', `0 0 ${i.w} ${i.h}`);
-    const gV = group(svg, 'videk');
-    mk('rect', { x: 0, y: 0, width: i.w, height: i.h, class: 'inset-bg' }, gV);
-    const gU = group(svg, 'belterulet');
-    mk('path', { d: i.agglo, class: 'agglo' }, gU);
-    const gB = group(svg, 'budapest');
-    mk('path', { d: i.budapest, class: 'bud-in' }, gB);
+    mk('rect', { x: 0, y: 0, width: i.w, height: i.h, class: 'inset-bg' }, group(svg, 'videk'));
+    mk('path', { d: i.agglo, class: 'agglo' }, group(svg, 'belterulet'));
+    mk('path', { d: i.budapest, class: 'bud-in' }, group(svg, 'budapest'));
     mk('path', { d: i.danube, class: 'danube' }, svg);
-    const gL = group(svg, null, 'labels');
+    const gL = group(svg, null);
     gL.setAttribute('aria-hidden', 'true');
     for (const [name, [x, y]] of Object.entries(i.labels)) {
-      const t = mk('text', { x, y, class: 'inset-label', 'text-anchor': 'middle' }, gL);
-      t.textContent = name;
+      mk('text', { x, y, class: 'inset-label', 'text-anchor': 'middle' }, gL).textContent = name;
     }
     const gM = group(svg, 'metro');
     const lines = Object.entries(i.metro);
-    for (const [, d] of lines) mk('path', { d, class: 'm-halo' }, gM);
-    for (const [, d] of lines) mk('path', { d, class: 'm-case' }, gM);
-    for (const [k, d] of lines) mk('path', { d, class: `m-line m-line--${k.slice(1)}` }, gM);
-    for (const [, d] of lines) mk('path', { d, class: 'm-hit' }, gM);
-    // Végállomás-jelek és vonaljelzések: M1 és M2 keleti, M3 északi, M4 délnyugati végén
+    for (const cls of ['m-halo', 'm-case', 'm-line', 'm-hit']) {
+      for (const [k, d] of lines) mk('path', { d, class: cls === 'm-line' ? `m-line m-line--${k.slice(1)}` : cls }, gM);
+    }
+    // Vonaljelzések: M1 és M2 keleti, M3 északi, M4 délnyugati végén
     const badgeEnd = { M1: 1, M2: 1, M3: 0, M4: 0 };
     const badgeOff = { M1: [12, -12], M2: [14, 0], M3: [12, -10], M4: [-14, 10] };
     for (const [k, ends] of Object.entries(i.termini)) {
@@ -664,127 +387,54 @@ footer { font-size: 12px; color: var(--muted); }
       const [ox, oy] = badgeOff[k];
       const n = k.slice(1);
       mk('rect', { x: bx + ox - 13, y: by + oy - 9, width: 26, height: 18, rx: 5, style: `fill: var(--m${n})` }, gM);
-      const t = mk('text', { x: bx + ox, y: by + oy + 4, 'text-anchor': 'middle', class: `badge-txt${n === '1' ? ' badge-txt--1' : ''}` }, gM);
-      t.textContent = k;
+      mk('text', { x: bx + ox, y: by + oy + 4, 'text-anchor': 'middle', class: `badge-txt${n === '1' ? ' badge-txt--1' : ''}` }, gM).textContent = k;
     }
   }
 
-  /* ---------- Jelmagyarázat-ikonok ---------- */
-  const SYM = {
-    bud: '<svg width="26" height="26" viewBox="0 0 26 26"><path d="M5 9c3-5 11-6 15-2s3 11-2 13-12 1-14-4 0-5 1-7z" style="fill: var(--c-budapest)"/></svg>',
-    land: '<svg width="26" height="26" viewBox="0 0 26 26"><path d="M3 11l5-5 6 2 5-3 4 4-2 6-5 5-7 1-4-4z" style="fill: var(--land); stroke: var(--muted)" stroke-width="1.3" stroke-linejoin="round"/></svg>',
-    urban: '<svg width="26" height="26" viewBox="0 0 26 26"><g style="fill: var(--c-belterulet)" fill-opacity=".75"><circle cx="9" cy="10" r="5"/><circle cx="18" cy="16" r="4"/><circle cx="8" cy="19" r="2.6"/></g></svg>',
-    ring: '<svg width="26" height="26" viewBox="0 0 26 26"><circle cx="13" cy="13" r="8" fill="none" style="stroke: var(--c-gazdasagi)" stroke-width="2.2" stroke-dasharray="3 2.6"/><circle cx="13" cy="13" r="2.4" style="fill: var(--ink)"/></svg>',
-    metro: '<svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke-width="2.6" stroke-linecap="round"><path d="M4 13h18" style="stroke: var(--m2)"/><path d="M8 3l10 20" style="stroke: var(--m3)"/><path d="M13 13l8-8" style="stroke: var(--m1)"/><path d="M4 21l9-8" style="stroke: var(--m4)"/></svg>',
-    road: '<svg width="26" height="26" viewBox="0 0 26 26" fill="none" stroke-linecap="round"><path d="M3 20c6-2 8-12 20-14" style="stroke: var(--c-kozut)" stroke-opacity=".22" stroke-width="7"/><path d="M3 20c6-2 8-12 20-14" style="stroke: var(--c-kozut)" stroke-width="2.4"/></svg>',
-    shield: '<svg width="26" height="26" viewBox="0 0 26 26"><path d="M13 3l8 3v6c0 6-4 9-8 11-4-2-8-5-8-11V6z" fill="none" style="stroke: var(--c-vedett)" stroke-width="2" stroke-linejoin="round"/><path d="M9 13l3 3 5-6" fill="none" style="stroke: var(--c-vedett)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-  };
-
-  const GROUPS = [
-    { title: 'Összesen', cls: 'sum', cats: ['budapest', 'videk'] },
-    { title: 'Területi kategóriák a forrásdokumentum szerint', cls: 'cat', cats: ['belterulet', 'gazdasagi', 'metro', 'kozut', 'vedett'] }
-  ];
-
-  function buildLegend() {
-    const box = $('#legend');
-    for (const gr of GROUPS) {
-      const sec = document.createElement('div');
-      sec.className = 'legend-group';
-      sec.innerHTML = `<h3>${gr.title}</h3><div class="legend-grid legend-grid--${gr.cls}"></div>`;
-      const grid = sec.querySelector('.legend-grid');
-      for (const cat of gr.cats) {
-        const c = CATS[cat];
-        const b = document.createElement('button');
-        b.type = 'button';
-        b.className = 'cat';
-        b.id = `cat-${cat}`;
-        b.dataset.legend = cat;
-        b.innerHTML = `<span class="cat-sym" aria-hidden="true">${SYM[c.sym]}</span>
-          <span class="cat-body"><span class="cat-area">${c.area}</span><span class="cat-name">${c.name}</span></span>
-          <span class="cat-foot"><span class="cat-status"><i class="dot"></i><span class="cat-st"></span></span>
-          <span class="cat-num"><b class="cat-v"></b><small class="cat-u"></small></span></span>`;
-        grid.appendChild(b);
-      }
-      box.appendChild(sec);
-    }
-  }
-
-  function buildScenDesc() {
-    $('#scenDesc').innerHTML = Object.keys(SC).map(k =>
-      `<p data-sc="${k}">${SC[k].desc}<small>Jogi besorolás: a 2026. október 13-i összefoglaló alapján.</small></p>`).join('');
-  }
-
-  /* ---------- Állapot ---------- */
-  // anchorEl: a kategórialista gombja, amelyhez az ablak igazodik (görgetéskor is)
-  const state = { sc: 'terv', cat: null, pinned: false, anchorEl: null };
-
-  function applyScenario(sc) {
-    state.sc = sc;
-    for (const cat of ORDER) app.style.setProperty(`--c-${cat}`, `var(--st-${CATS[cat].st[sc][0]})`);
-    document.querySelectorAll('#scenDesc p').forEach(p => p.classList.toggle('is-cur', p.dataset.sc === sc));
+  function buildRows() {
+    const box = $('#rows');
     for (const cat of ORDER) {
-      const c = CATS[cat], b = $(`#cat-${cat}`);
-      const [st, txt, short] = c.st[sc];
-      b.style.setProperty('--c', `var(--st-${st})`);
-      b.querySelector('.cat-st').textContent = short || txt;
-      const L = c.loss[sc];
-      b.querySelector('.cat-v').textContent = L.v;
-      b.querySelector('.cat-u').textContent = sc === 'regen' ? 'kiinduló állapot' : 'becsült vesztés';
-      b.setAttribute('aria-label', `${c.name}, ${c.area}: ${txt}. Becsült vesztés: ${L.v.replace('*', '')}.`);
+      const c = CATS[cat];
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = c.sub ? 'row row--sub' : 'row';
+      b.id = `row-${cat}`;
+      b.dataset.row = cat;
+      b.setAttribute('aria-label', `${c.name}: jelenleg ${c.now}, várhatóan megmarad ${c.keep}.`);
+      b.innerHTML = `<span class="name"><i class="dot" style="--c: var(${c.share > 0 ? '--stay' : '--gone'})"></i>${c.name}</span>
+        <span class="n"><small>Jelenleg</small>${c.now}</span>
+        <span class="n${c.share > 0 ? ' n--stay' : ''}"><small>Várhatóan megmarad</small>${c.keep}</span>`;
+      box.appendChild(b);
     }
-    const k = KPI[sc];
-    $('#kpiLoss').innerHTML = `${k.loss}<span class="unit">db</span>`;
-    $('#kpiLossSub').textContent = k.lossSub;
-    $('#kpiStock').textContent = `≈ ${fmt(NAT)} db`;
-    $('#kpiKeep').textContent = `${k.keep} db`;
-    $('#kpiKeepSub').textContent = k.keepSub;
-    $('#split').innerHTML = SPLIT[sc].map(r => `<div class="split-row"><span>${r.n}</span>${barHTML(r.bar)}<span class="split-val">${r.v}</span></div>`).join('');
-    if (state.cat) renderTip(state.cat);
-    try { localStorage.setItem('oriasplakat-scen', sc); } catch (e) { /* tárolás nélkül is működik */ }
-  }
-
-  function barHTML(bar) {
-    if (!bar) return '';
-    const [lo, hi] = bar;
-    return `<span class="bar" role="img" aria-label="${Math.round(lo)}${hi > lo ? '–' + Math.round(hi) : ''}% megszűnik"><i class="lost" style="width:${lo}%"></i><i class="range" style="width:${hi - lo}%"></i></span>`;
+    $('#totNow').textContent = fmt(NAT);
+    $('#totKeep').textContent = rng(KEEP);
+    $('#srcLine').textContent = `Jelenlegi számok: a Nemzeti Média- és Hírközlési Hatóság (NMHH) reklámkatasztere, ${KAT.allapot_hu.replace(/\.$/, '')}-i állapot. Várhatóan megmaradó számok: becslés a Magyar Reklámszövetség közölt számításaiból.`;
   }
 
   /* ---------- Felugró ablak ---------- */
-  function renderTip(cat) {
-    const c = CATS[cat], sc = state.sc;
-    const [st, stTxt] = c.st[sc];
-    const L = c.loss[sc];
-    const unit = L.unit || (sc === 'regen' ? 'megszűnő óriásplakát: kiinduló állapot' : 'becsült megszűnő óriásplakát');
-    const steps = ['regen', 'most', 'terv'].map(s => {
-      const [ss] = c.st[s];
-      return `<li class="${s === sc ? 'is-cur' : ''}" style="--c: var(--st-${ss})"><b><i class="dot"></i>${SC[s].short}</b>${ST_NAME[ss]}</li>`;
-    }).join('');
+  const state = { cat: null, pinned: false, anchorEl: null };
+
+  function render(cat) {
+    const c = CATS[cat];
     tip.innerHTML = `
-      <div class="tip-top"><span class="tip-area">${c.area}</span><button class="tip-close" type="button" aria-label="Bezárás">×</button></div>
-      <h3 class="tip-title">${c.name}</h3>
-      <p class="tip-sub">${c.sub}</p>
-      <p class="tip-status" style="--c: var(--st-${st})"><i class="dot"></i>${stTxt}</p>
-      <div class="tip-num"><span class="tip-big">${L.v}</span><span class="tip-unit">${unit}</span></div>
-      ${barHTML(L.bar)}
-      <dl class="tip-meta"><div><dt>Nyilvántartva</dt><dd>${c.stock}</dd></div><div><dt>Megmaradhat</dt><dd>${c.keep[sc]}</dd></div></dl>
-      <ol class="steps" aria-label="Változás időben">${steps}</ol>
-      <p class="tip-note">${c.note[sc]}</p>
-      ${L.joint ? '<p class="tip-foot">* A belterület általában és a külterületi útmenti sáv együtt; a kataszter nyilvános összesítései nem bontják szét őket.</p>' : ''}`;
+      <div class="tip-top"><h3 class="tip-title">${c.name}</h3><button class="tip-close" type="button" aria-label="Bezárás">×</button></div>
+      <div class="tip-nums"><div><span>Jelenleg</span><b>${c.now}</b></div><div class="${c.share > 0 ? 'stay' : ''}"><span>Várhatóan megmarad</span><b>${c.keep}</b></div></div>
+      <div class="bar" role="img" aria-label="${Math.round(c.share * 100)}% marad meg"><i style="width:${c.share * 100}%"></i></div>
+      <p class="tip-note">${c.note}</p>`;
   }
 
   function setFocus(cat) {
     if (cat) app.dataset.focus = cat; else delete app.dataset.focus;
-    document.querySelectorAll('.cat.is-on').forEach(b => b.classList.remove('is-on'));
-    if (cat) $(`#cat-${cat}`).classList.add('is-on');
+    document.querySelectorAll('.row.is-on').forEach(r => r.classList.remove('is-on'));
+    if (cat) $(`#row-${cat}`).classList.add('is-on');
   }
 
   function show(cat, pos, pinned, anchorEl) {
-    const changed = state.cat !== cat;
+    if (state.cat !== cat || tip.hidden) render(cat);
     state.cat = cat;
     state.pinned = !!pinned;
     state.anchorEl = anchorEl || null;
     tip.classList.toggle('is-pinned', state.pinned);
-    if (changed || tip.hidden) renderTip(cat);
     tip.hidden = false;
     setFocus(cat);
     place(pos);
@@ -801,7 +451,7 @@ footer { font-size: 12px; color: var(--muted); }
 
   const narrow = () => window.matchMedia('(max-width: 620px)').matches;
 
-  // pos: {x, y} kurzorpont vagy {rect} horgony
+  // pos: {x, y} kurzorpont vagy {rect} horgony (a lista sora)
   function place(pos) {
     if (narrow() || !pos) { tip.style.left = ''; tip.style.top = ''; return; }
     const w = tip.offsetWidth, h = tip.offsetHeight;
@@ -810,25 +460,20 @@ footer { font-size: 12px; color: var(--muted); }
     let x, y;
     if (pos.rect) {
       const r = pos.rect;
-      if (r.top - h - gap >= m) { x = r.left + r.width / 2 - w / 2; y = r.top - h - gap; }
-      else if (r.right + gap + w <= vw - m) { x = r.right + gap; y = r.top + r.height / 2 - h / 2; }
-      else if (r.bottom + gap + h <= vh - m) { x = r.left + r.width / 2 - w / 2; y = r.bottom + gap; }
-      else { x = r.left + r.width / 2 - w / 2; y = r.top + r.height / 2 - h / 2; }
+      x = r.left + 24;
+      if (r.top - h - gap >= m) y = r.top - h - gap;
+      else if (r.bottom + gap + h <= vh - m) y = r.bottom + gap;
+      else y = r.top + r.height / 2 - h / 2;
     } else {
       x = pos.x + gap; y = pos.y + gap;
       if (x + w > vw - m) x = pos.x - gap - w;
       if (y + h > vh - m) y = pos.y - gap - h;
     }
-    x = Math.max(m, Math.min(x, vw - w - m));
-    y = Math.max(m, Math.min(y, vh - h - m));
-    tip.style.left = `${Math.round(x)}px`;
-    tip.style.top = `${Math.round(y)}px`;
+    tip.style.left = `${Math.round(Math.max(m, Math.min(x, vw - w - m)))}px`;
+    tip.style.top = `${Math.round(Math.max(m, Math.min(y, vh - h - m)))}px`;
   }
 
-  function catAt(target) {
-    const g = target && target.closest ? target.closest('[data-cat]') : null;
-    return g ? g.dataset.cat : null;
-  }
+  const catAt = t => { const g = t && t.closest ? t.closest('[data-cat]') : null; return g ? g.dataset.cat : null; };
 
   function wireMap(svg) {
     svg.addEventListener('pointermove', e => {
@@ -840,71 +485,54 @@ footer { font-size: 12px; color: var(--muted); }
     svg.addEventListener('click', e => {
       const cat = catAt(e.target);
       if (!cat) return;
-      if (state.pinned && state.cat === cat) { hide(); return; }
-      show(cat, { x: e.clientX, y: e.clientY }, true);
       e.stopPropagation();
+      if (state.pinned && state.cat === cat) hide(); else show(cat, { x: e.clientX, y: e.clientY }, true);
     });
   }
 
-  function wireLegend() {
-    const box = $('#legend');
-    const btnOf = t => t.closest ? t.closest('.cat') : null;
+  function wireRows() {
+    const box = $('#rows');
+    const rowOf = t => (t.closest ? t.closest('.row') : null);
     box.addEventListener('pointerover', e => {
-      const b = btnOf(e.target);
-      if (!b || e.pointerType !== 'mouse' || state.pinned) return;
-      show(b.dataset.legend, { rect: b.getBoundingClientRect() }, false, b);
+      const r = rowOf(e.target);
+      if (r && e.pointerType === 'mouse' && !state.pinned) show(r.dataset.row, { rect: r.getBoundingClientRect() }, false, r);
     });
     box.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' && !state.pinned) hide(); });
     box.addEventListener('focusin', e => {
-      const b = btnOf(e.target);
-      if (b) show(b.dataset.legend, { rect: b.getBoundingClientRect() }, state.pinned, b);
+      const r = rowOf(e.target);
+      if (r) show(r.dataset.row, { rect: r.getBoundingClientRect() }, state.pinned, r);
     });
-    box.addEventListener('focusout', e => {
-      if (!state.pinned && !box.contains(e.relatedTarget)) hide();
-    });
+    box.addEventListener('focusout', e => { if (!state.pinned && !box.contains(e.relatedTarget)) hide(); });
     box.addEventListener('click', e => {
-      const b = btnOf(e.target);
-      if (!b) return;
-      const cat = b.dataset.legend;
-      if (state.pinned && state.cat === cat) { hide(); return; }
-      show(cat, { rect: b.getBoundingClientRect() }, true, b);
+      const r = rowOf(e.target);
+      if (!r) return;
       e.stopPropagation();
+      if (state.pinned && state.cat === r.dataset.row) hide(); else show(r.dataset.row, { rect: r.getBoundingClientRect() }, true, r);
     });
   }
 
-  tip.addEventListener('click', e => {
-    if (e.target.closest('.tip-close')) hide();
-    e.stopPropagation();
-  });
+  tip.addEventListener('click', e => { e.stopPropagation(); if (e.target.closest('.tip-close')) hide(); });
   document.addEventListener('click', () => { if (state.pinned) hide(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && state.cat) hide(); });
-  // Görgetéskor és átméretezéskor a listához kötött ablak követi a gombját; a térképen
-  // kattintással rögzített ablak bezárul (a keskeny képernyős alsó lap helyben marad)
-  let reflow = 0;
-  function onViewportChange() {
-    if (reflow) return;
-    reflow = requestAnimationFrame(() => {
-      reflow = 0;
+  // Görgetéskor a listához kötött ablak követi a sorát; a térképen rögzített ablak bezárul
+  let raf = 0;
+  const onViewport = () => {
+    if (raf) return;
+    raf = requestAnimationFrame(() => {
+      raf = 0;
       if (!state.cat || narrow()) return;
       if (state.anchorEl) place({ rect: state.anchorEl.getBoundingClientRect() });
       else if (state.pinned) hide();
     });
-  }
-  window.addEventListener('resize', onViewportChange);
-  window.addEventListener('scroll', onViewportChange, { passive: true });
+  };
+  window.addEventListener('resize', onViewport);
+  window.addEventListener('scroll', onViewport, { passive: true });
 
-  /* ---------- Indítás ---------- */
   buildMain();
   buildInset();
-  buildLegend();
-  buildScenDesc();
+  buildRows();
   wireMap($('#map'));
   wireMap($('#inset'));
-  wireLegend();
-  let start = 'terv';
-  try { const s = localStorage.getItem('oriasplakat-scen'); if (Object.prototype.hasOwnProperty.call(SC, s)) start = s; } catch (e) { /* alapérték */ }
-  $(`#sc-${start}`).checked = true;
-  applyScenario(start);
-  $('#scen').addEventListener('change', e => { if (e.target.name === 'scen') applyScenario(e.target.value); });
+  wireRows();
 })();
 </script>
