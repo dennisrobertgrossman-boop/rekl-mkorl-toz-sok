@@ -5,12 +5,12 @@
   "oriasplakat": {
     "orszagos": 20562,
     "budapest": 8318,
-    "budapest_metro": 251,
+    "budapest_metro": 232,
     "videk": 12244,
-    "videk_kulterulet_hrsz": 1027,
+    "videk_kulterulet_hrsz": 1034,
     "videk_kulterulet_becsult_utcacimes": 274,
-    "videk_belterulet_hrsz": 4571,
-    "videk_utcacim": 6646,
+    "videk_belterulet_hrsz": 4607,
+    "videk_utcacim": 6603,
     "kulterulet_becsles": {
       "autopalya_km": {
         "utcacimes_tetel": 169,
