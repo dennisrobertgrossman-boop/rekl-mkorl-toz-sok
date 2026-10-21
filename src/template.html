@@ -178,6 +178,7 @@ footer ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 4px; }
 @keyframes tip-in { from { opacity: 0; transform: translateY(4px) scale(.985); } to { opacity: 1; transform: none; } }
 .tip-top { display: flex; justify-content: space-between; align-items: start; gap: 10px; }
 .tip-title { margin: 0; font-size: 16px; font-weight: 700; line-height: 1.25; }
+.tip-scope { margin: 0; padding: 6px 10px; border-radius: 8px; background: var(--surface-2); color: var(--ink); font-size: 12.5px; font-weight: 600; line-height: 1.4; }
 .tip-close { display: none; flex: none; border: 0; background: var(--surface-2); color: var(--ink); width: 28px; height: 28px; border-radius: 50%; font: 600 16px/1 var(--font); cursor: pointer; }
 .tip.is-pinned .tip-close { display: grid; place-items: center; }
 .tip-close:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
@@ -320,6 +321,8 @@ footer ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 4px; }
       note: 'Vidéken a külterületen nyilvántartott óriásplakátok, közöttük a közút lakott területen kívüli szakasza mellettiek. Az út menti sávban óriásplakát már most is tilos; a mezőgazdasági, zöld-, erdő-, természetközeli és vízgazdálkodási övezetben a tervezet szerint egyéb reklámeszköz nem maradhat fenn. A külterületi gazdasági övezetben állókat a gazdasági övezet sora tartalmazza.' }
   };
   const ORDER = ['budapest', 'metro', 'videk', 'belterulet', 'gazdasagi', 'kulterulet'];
+  // A vidéki számok összesítettek: a felugró ablak ezt külön kiírja, hogy ne egy-egy város számának tűnjenek
+  const VIDEKI = new Set(['videk', 'belterulet', 'gazdasagi', 'kulterulet']);
 
   /* ---------- Térkép ---------- */
   function mk(tag, attrs, parent) {
@@ -427,6 +430,7 @@ footer ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 4px; }
     const c = CATS[cat];
     tip.innerHTML = `
       <div class="tip-top"><h3 class="tip-title">${c.name}</h3><button class="tip-close" type="button" aria-label="Bezárás">×</button></div>
+      ${VIDEKI.has(cat) ? '<p class="tip-scope">A számok Budapest nélkül az egész országra együtt vonatkoznak, nem egy adott településre.</p>' : ''}
       <div class="tip-nums"><div><span>Jelenleg</span><b>${c.now}</b></div><div class="${c.share > 0 ? 'stay' : ''}"><span>Várhatóan megmarad</span><b>${c.keep}</b></div></div>
       ${c.note ? `<p class="tip-note">${c.note}</p>` : ''}`;
   }
