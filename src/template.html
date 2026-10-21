@@ -240,7 +240,7 @@ footer ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 4px; }
       <svg id="map" role="img" aria-label="Magyarország térképe. A területek számai a térkép alatti listában is szerepelnek."></svg>
       <div class="map-foot">
         <ul class="key">
-          <li style="--c: var(--gone)"><i class="dot"></i><span><b>Nem maradhat fenn:</b> piros folt – belterület, piros vonal – külterület</span></li>
+          <li style="--c: var(--gone)"><i class="dot"></i><span><b>Nem maradhat fenn:</b> piros folt – belterület, piros vonal – külterület (az út csak jelkép)</span></li>
           <li style="--c: var(--stay)"><i class="dot"></i><span><b>Fennmaradhat:</b> zöld kör – gazdasági és nagy kereskedelmi övezet, zöld vonal – metró</span></li>
         </ul>
         <span>Jelképes ábrázolás</span>
@@ -318,11 +318,13 @@ footer ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 4px; }
     gazdasagi: { name: 'Gazdasági és nagy kereskedelmi övezet, gyalogos aluljáró', sub: true, now: rng(VKEEP), keep: rng(VKEEP), share: 1,
       note: 'Vidéken: gazdasági terület övezet, nagy bevásárlóközpont és nagy kiterjedésű kereskedelmi célú terület különleges övezet, az ezekkel közvetlenül határos közút lakott területi szakasza, valamint gyalogos aluljáró. A tervezet szerint itt fennmaradhat óriásplakát. A jelenlegi szám is becslés, mert a reklámkataszter az övezetet nem tartalmazza.' },
     kulterulet: { name: 'Külterület', sub: true, now: rng(KUL), keep: '≈ 0', share: 0,
-      note: 'Vidéken a külterületen nyilvántartott óriásplakátok, közöttük a közút lakott területen kívüli szakasza mellettiek. Az út menti sávban óriásplakát már most is tilos; a mezőgazdasági, zöld-, erdő-, természetközeli és vízgazdálkodási övezetben a tervezet szerint egyéb reklámeszköz nem maradhat fenn. A külterületi gazdasági övezetben állókat a gazdasági övezet sora tartalmazza.' }
+      note: 'Vidéken a külterületen nyilvántartott óriásplakátok, akár közút mellett állnak, akár nem. Az út menti sávban óriásplakát már most is tilos; a mezőgazdasági, zöld-, erdő-, természetközeli és vízgazdálkodási övezetben a tervezet szerint egyéb reklámeszköz nem maradhat fenn. A külterületi gazdasági övezetben állók megmaradó számát a gazdasági övezet sora mutatja.' }
   };
   const ORDER = ['budapest', 'metro', 'videk', 'belterulet', 'gazdasagi', 'kulterulet'];
-  // A vidéki számok összesítettek: a felugró ablak ezt külön kiírja, hogy ne egy-egy város számának tűnjenek
-  const VIDEKI = new Set(['videk', 'belterulet', 'gazdasagi', 'kulterulet']);
+  // A vidéki számok összesítettek: a felugró ablak ezt külön kiírja, hogy ne egy-egy város vagy út számának tűnjenek
+  const VIDEKI_SZAM = 'A számok Budapest nélkül az egész országra együtt vonatkoznak, nem egy adott településre.';
+  const SCOPE = { videk: VIDEKI_SZAM, belterulet: VIDEKI_SZAM, gazdasagi: VIDEKI_SZAM,
+    kulterulet: 'A számok Budapest nélkül az ország teljes külterületére vonatkoznak, nem csak az utak mentén állókra. A térképen az út csak jelképezi a külterületet.' };
 
   /* ---------- Térkép ---------- */
   function mk(tag, attrs, parent) {
@@ -430,7 +432,7 @@ footer ul { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 4px; }
     const c = CATS[cat];
     tip.innerHTML = `
       <div class="tip-top"><h3 class="tip-title">${c.name}</h3><button class="tip-close" type="button" aria-label="Bezárás">×</button></div>
-      ${VIDEKI.has(cat) ? '<p class="tip-scope">A számok Budapest nélkül az egész országra együtt vonatkoznak, nem egy adott településre.</p>' : ''}
+      ${SCOPE[cat] ? `<p class="tip-scope">${SCOPE[cat]}</p>` : ''}
       <div class="tip-nums"><div><span>Jelenleg</span><b>${c.now}</b></div><div class="${c.share > 0 ? 'stay' : ''}"><span>Várhatóan megmarad</span><b>${c.keep}</b></div></div>
       ${c.note ? `<p class="tip-note">${c.note}</p>` : ''}`;
   }
